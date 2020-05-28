@@ -9,7 +9,6 @@ import android.os.Environment;
 import android.widget.ImageView;
 
 
-import org.jmrtd.lds.icao.MRZInfo;
 
 
 import java.io.File;

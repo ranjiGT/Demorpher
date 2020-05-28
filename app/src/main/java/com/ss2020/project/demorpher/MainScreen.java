@@ -22,7 +22,7 @@ import android.widget.Button;
 import android.widget.Toast;
 
 
-//N:\University videos\Demorpher\app\libs\scuba-code-r319-trunk\acr120provider\src\acs\jni\ACR120U.java
+
 
 import java.io.File;
 import java.lang.reflect.Method;
