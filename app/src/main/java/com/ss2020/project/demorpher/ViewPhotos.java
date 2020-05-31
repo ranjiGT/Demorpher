@@ -9,8 +9,6 @@ import android.os.Environment;
 import android.widget.ImageView;
 
 
-
-
 import java.io.File;
 
 public class ViewPhotos extends AppCompatActivity {
@@ -25,7 +23,7 @@ public class ViewPhotos extends AppCompatActivity {
         photos = (ImageView) findViewById(R.id.photos);
 
         //temporary
-        Bitmap image = BitmapFactory.decodeFile(getExternalFilesDir(Environment.DIRECTORY_DCIM) + File.separator  + "photo.jpeg");
+        Bitmap image = BitmapFactory.decodeFile(getExternalFilesDir(Environment.DIRECTORY_DCIM) + File.separator + "photo.jpeg");
         photos.setImageBitmap(image);
     }
 }

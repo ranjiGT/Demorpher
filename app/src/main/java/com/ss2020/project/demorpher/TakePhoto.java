@@ -49,9 +49,9 @@ public class TakePhoto extends AppCompatActivity {
         textureView = (TextureView) findViewById(R.id.textureView);
         guidline = (ImageView) findViewById(R.id.guidline);
 
-        if(allPermissionsGranted()){
+        if (allPermissionsGranted()) {
             startCamera(); //start camera if permission has been granted by user
-        } else{
+        } else {
             ActivityCompat.requestPermissions(this, REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS);
         }
     }
@@ -61,7 +61,7 @@ public class TakePhoto extends AppCompatActivity {
 
         CameraX.unbindAll();
 
-        Rational aspectRatio = new Rational (textureView.getWidth(), textureView.getHeight());
+        Rational aspectRatio = new Rational(textureView.getWidth(), textureView.getHeight());
         Size screen = new Size(textureView.getWidth(), textureView.getHeight()); //size of the screen
 
         // setting resolution and aspect ratio
@@ -70,16 +70,16 @@ public class TakePhoto extends AppCompatActivity {
 
         preview.setOnPreviewOutputUpdateListener(new Preview.OnPreviewOutputUpdateListener() {
 
-                    @Override
-                    public void onUpdated(Preview.PreviewOutput output){
-                        ViewGroup parent = (ViewGroup) textureView.getParent();
-                        parent.removeView(textureView);
-                        parent.addView(textureView, 0);
+            @Override
+            public void onUpdated(Preview.PreviewOutput output) {
+                ViewGroup parent = (ViewGroup) textureView.getParent();
+                parent.removeView(textureView);
+                parent.addView(textureView, 0);
 
-                        textureView.setSurfaceTexture(output.getSurfaceTexture());
-                        updateTransform();
-                    }
-                });
+                textureView.setSurfaceTexture(output.getSurfaceTexture());
+                updateTransform();
+            }
+        });
 
 
         ImageCaptureConfig imageCaptureConfig = new ImageCaptureConfig.Builder().setCaptureMode(ImageCapture.CaptureMode.MAX_QUALITY) // to get maximum quality
@@ -90,13 +90,13 @@ public class TakePhoto extends AppCompatActivity {
         findViewById(R.id.capture).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                File file = new File(getExternalFilesDir(Environment.DIRECTORY_DCIM) + File.separator  + "photo.jpeg");
+                File file = new File(getExternalFilesDir(Environment.DIRECTORY_DCIM) + File.separator + "photo.jpeg");
                 imgCap.takePicture(file, new ImageCapture.OnImageSavedListener() {
 
                     @Override
                     public void onImageSaved(@NonNull File file) {
                         String msg = "Captured at " + file.getAbsolutePath();
-                        Toast.makeText(getBaseContext(), msg,Toast.LENGTH_LONG).show();
+                        Toast.makeText(getBaseContext(), msg, Toast.LENGTH_LONG).show();
 
                         rotateImage(file);
 
@@ -105,8 +105,8 @@ public class TakePhoto extends AppCompatActivity {
                     @Override
                     public void onError(@NonNull ImageCapture.UseCaseError useCaseError, @NonNull String message, @Nullable Throwable cause) {
                         String msg = "Capture failed : " + message;
-                        Toast.makeText(getBaseContext(), msg,Toast.LENGTH_LONG).show();
-                        if(cause != null){
+                        Toast.makeText(getBaseContext(), msg, Toast.LENGTH_LONG).show();
+                        if (cause != null) {
                             cause.printStackTrace();
                         }
                     }
@@ -115,11 +115,11 @@ public class TakePhoto extends AppCompatActivity {
         });
 
         //bind to lifecycle:
-        CameraX.bindToLifecycle((LifecycleOwner)this, preview, imgCap);
+        CameraX.bindToLifecycle((LifecycleOwner) this, preview, imgCap);
     }
 
 
-    private void updateTransform(){
+    private void updateTransform() {
         Matrix mx = new Matrix();
         float w = textureView.getMeasuredWidth();
         float h = textureView.getMeasuredHeight();
@@ -128,9 +128,9 @@ public class TakePhoto extends AppCompatActivity {
         float cY = h / 2f;
 
         int rotationDgr;
-        int rotation = (int)textureView.getRotation() ;
+        int rotation = (int) textureView.getRotation();
 
-        switch(rotation){
+        switch (rotation) {
             case Surface.ROTATION_0:
                 rotationDgr = 0;
                 break;
@@ -147,34 +147,34 @@ public class TakePhoto extends AppCompatActivity {
                 return;
         }
 
-        mx.postRotate((float)rotationDgr, cX, cY);
+        mx.postRotate((float) rotationDgr, cX, cY);
         textureView.setTransform(mx);
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
 
-        if(requestCode == REQUEST_CODE_PERMISSIONS){
-            if(allPermissionsGranted()){
+        if (requestCode == REQUEST_CODE_PERMISSIONS) {
+            if (allPermissionsGranted()) {
                 startCamera();
-            } else{
+            } else {
                 Toast.makeText(this, "Permissions not granted to use the camera", Toast.LENGTH_SHORT).show();
                 finish();
             }
         }
     }
 
-    private boolean allPermissionsGranted(){
+    private boolean allPermissionsGranted() {
 
-        for(String permission : REQUIRED_PERMISSIONS){
-            if(ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED){
+        for (String permission : REQUIRED_PERMISSIONS) {
+            if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
                 return true;
             }
         }
         return true;
     }
 
-    public void rotateImage(File file){
+    public void rotateImage(File file) {
         try {
 
             ExifInterface exif = new ExifInterface(file.getPath());
@@ -204,7 +204,7 @@ public class TakePhoto extends AppCompatActivity {
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100,
                     outputStream);
-            FileOutputStream out = new FileOutputStream(getExternalFilesDir(Environment.DIRECTORY_DCIM) + File.separator  + "photo.jpeg");
+            FileOutputStream out = new FileOutputStream(getExternalFilesDir(Environment.DIRECTORY_DCIM) + File.separator + "photo.jpeg");
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
             out.close();
 
