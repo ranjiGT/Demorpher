@@ -6,14 +6,92 @@
     android:layout_height="match_parent"
     tools:context=".MatchPhotos">
 
+    <ImageView
+        android:id="@+id/image_temp_for_testing"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        app:layout_constraintEnd_toStartOf="@+id/image_temp_for_training"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:srcCompat="@tools:sample/avatars" />
+
+    <ImageView
+        android:id="@+id/image_temp_for_training"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/image_temp_for_testing"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:srcCompat="@tools:sample/avatars" />
+
     <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/match"
-        android:textSize="36sp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:id="@+id/temp_text_result"
+        android:layout_width="157dp"
+        android:layout_height="47dp"
+        android:layout_marginBottom="40dp"
+        android:text="Result"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toTopOf="@+id/button_layout"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextureView
+        android:id="@+id/temp_textureView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/temp_text_result"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/image_temp_for_testing" />
+
+    <LinearLayout
+        android:id="@+id/button_layout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        android:gravity="center"
+        android:layout_marginBottom="20dp"
+        app:layout_goneMarginBottom="10dp">
+
+        <Button
+            android:id="@+id/button_temp_add_train_image"
+            android:layout_width="wrap_content"
+            android:layout_height="45dp"
+            android:layout_marginLeft="10dp"
+            android:text="Add" />
+
+        <Button
+            android:id="@+id/click"
+            android:layout_width="wrap_content"
+            android:layout_height="45dp"
+            android:layout_marginLeft="10dp"
+            android:text="click" />
+
+        <Button
+            android:id="@+id/temp_test_button"
+            android:layout_width="wrap_content"
+            android:layout_height="45dp"
+            android:layout_marginLeft="10dp"
+            android:text="Detect" />
+
+        <Button
+            android:id="@+id/button_temp_match"
+            android:layout_width="wrap_content"
+            android:layout_height="45dp"
+            android:text="@string/match" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/match_text"
+        style="@android:style/Widget.DeviceDefault.TextView"
+        android:layout_width="100dp"
+        android:layout_height="60dp"
+        android:text="@string/match"
+        android:textSize="30sp"
+        app:layout_constraintEnd_toStartOf="@+id/temp_text_result"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/temp_textureView" />
 </androidx.constraintlayout.widget.ConstraintLayout>

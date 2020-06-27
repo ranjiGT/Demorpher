@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 
+
 public class MainScreen extends AppCompatActivity {
 
     private static final int CAMERA_PERMISSION_CODE = 111;
@@ -20,6 +21,7 @@ public class MainScreen extends AppCompatActivity {
 
     Button take_photo;
     Button viewPhotos;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
