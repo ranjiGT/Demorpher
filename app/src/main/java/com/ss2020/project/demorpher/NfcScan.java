@@ -1,244 +1,117 @@
 package com.ss2020.project.demorpher;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.Bundle;
+
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.app.PendingIntent;
-import android.content.Intent;
-import android.nfc.NdefMessage;
-import android.nfc.NdefRecord;
-import android.nfc.NfcAdapter;
-import android.nfc.Tag;
-import android.nfc.tech.MifareClassic;
-import android.nfc.tech.MifareUltralight;
-import android.os.Bundle;
-import android.os.Parcelable;
-import android.provider.Settings;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.view.Menu;
+import android.view.MenuItem;
 
+import com.appliedrec.mrtdreader.BACInputFragment;
+import com.appliedrec.mrtdreader.BACSpec;
+import com.appliedrec.mrtdreader.MRTDScanActivity;
+import com.appliedrec.mrtdreader.MRTDScanResult;
 
-import com.ss2020.project.demorpher.Parser.NdefMessageParser;
-import com.ss2020.project.demorpher.record.ParsedNdefRecord;
+import java.util.Date;
 
-import java.util.List;
+public class NfcScan extends AppCompatActivity implements BACInputFragment.OnBACInputListener {
 
-public class NfcScan extends AppCompatActivity {
-    private NfcAdapter nfcAdapter;
-    private PendingIntent pendingIntent;
-    private TextView text;
+    private static final int REQUEST_CODE_MRTD_SCAN = 0;
+    private static final String BAC_INPUT_TAG = "bacInput";
+    private BACSpec bacSpec;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_nfc);
-        text = (TextView) findViewById(R.id.text);
-        nfcAdapter = NfcAdapter.getDefaultAdapter(this);
-
-        if (nfcAdapter == null) {
-            Toast.makeText(this, "No NFC", Toast.LENGTH_SHORT).show();
-            finish();
-            return;
+        setContentView(R.layout.activity_main);
+        if (savedInstanceState == null) {
+            SharedPreferences preferences = getPreferences(MODE_PRIVATE);
+            if (preferences.contains(StorageKeys.DOCUMENT_NUMBER) && preferences.contains(StorageKeys.DATE_OF_BIRTH) && preferences.contains(StorageKeys.DATE_OF_EXPIRY)) {
+                bacSpec = new BACSpec(preferences.getString(StorageKeys.DOCUMENT_NUMBER, null), new Date(preferences.getLong(StorageKeys.DATE_OF_BIRTH, new Date().getTime())), new Date(preferences.getLong(StorageKeys.DATE_OF_EXPIRY, new Date().getTime())));
+                invalidateOptionsMenu();
+            }
+            getSupportFragmentManager().beginTransaction().add(R.id.container, BACInputFragment.newInstance(bacSpec), BAC_INPUT_TAG).commit();
+        } else {
+            if (bacSpec == null && savedInstanceState.containsKey(StorageKeys.DOCUMENT_NUMBER) && savedInstanceState.containsKey(StorageKeys.DATE_OF_BIRTH) && savedInstanceState.containsKey(StorageKeys.DATE_OF_EXPIRY)) {
+                String docNumber = savedInstanceState.getString(StorageKeys.DOCUMENT_NUMBER);
+                long dob = savedInstanceState.getLong(StorageKeys.DATE_OF_BIRTH);
+                long doe = savedInstanceState.getLong(StorageKeys.DATE_OF_EXPIRY);
+                bacSpec = new BACSpec(docNumber, new Date(dob), new Date(doe));
+            }
         }
-
-        pendingIntent = PendingIntent.getActivity(this, 0,
-                new Intent(this, this.getClass())
-                        .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-
-        if (nfcAdapter != null) {
-            if (!nfcAdapter.isEnabled())
-                showWirelessSettings();
-
-            nfcAdapter.enableForegroundDispatch(this, pendingIntent, null, null);
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (bacSpec != null) {
+            outState.putString(StorageKeys.DOCUMENT_NUMBER, bacSpec.getDocumentNumber());
+            outState.putLong(StorageKeys.DATE_OF_BIRTH, bacSpec.getDateOfBirth().getTime());
+            outState.putLong(StorageKeys.DATE_OF_EXPIRY, bacSpec.getDateOfExpiry().getTime());
         }
-    }
-
-    private void showWirelessSettings() {
-        Toast.makeText(this, "You need to enable NFC", Toast.LENGTH_SHORT).show();
-        Intent intent = new Intent(Settings.ACTION_WIRELESS_SETTINGS);
-        startActivity(intent);
     }
 
     @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-        setIntent(intent);
-        resolveIntent(intent);
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_menu, menu);
+        return true;
     }
 
-    private void resolveIntent(Intent intent) {
-        String action = intent.getAction();
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        menu.findItem(R.id.action_scan).setEnabled(bacSpec != null);
+        return true;
+    }
 
-        if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(action)
-                || NfcAdapter.ACTION_TECH_DISCOVERED.equals(action)
-                || NfcAdapter.ACTION_NDEF_DISCOVERED.equals(action)) {
-            Parcelable[] rawMsgs = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
-            NdefMessage[] msgs;
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.action_scan && bacSpec != null) {
+            SharedPreferences preferences = getPreferences(MODE_PRIVATE);
+            preferences.edit()
+                    .putString(StorageKeys.DOCUMENT_NUMBER, bacSpec.getDocumentNumber())
+                    .putLong(StorageKeys.DATE_OF_BIRTH, bacSpec.getDateOfBirth().getTime())
+                    .putLong(StorageKeys.DATE_OF_EXPIRY, bacSpec.getDateOfExpiry().getTime())
+                    .apply();
+            Intent intent = new Intent(this, MRTDScanActivity.class);
+            intent.putExtra(MRTDScanActivity.EXTRA_BAC_SPEC, bacSpec);
+            startActivityForResult(intent, REQUEST_CODE_MRTD_SCAN);
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
-            if (rawMsgs != null) {
-                msgs = new NdefMessage[rawMsgs.length];
-
-                for (int i = 0; i < rawMsgs.length; i++) {
-                    msgs[i] = (NdefMessage) rawMsgs[i];
-                }
-
-            } else {
-                byte[] empty = new byte[0];
-                byte[] id = intent.getByteArrayExtra(NfcAdapter.EXTRA_ID);
-                Tag tag = (Tag) intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-                byte[] payload = dumpTagData(tag).getBytes();
-                NdefRecord record = new NdefRecord(NdefRecord.TNF_UNKNOWN, empty, id, payload);
-                NdefMessage msg = new NdefMessage(new NdefRecord[]{record});
-                msgs = new NdefMessage[]{msg};
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_CODE_MRTD_SCAN && resultCode == RESULT_OK && data != null && data.hasExtra(MRTDScanActivity.EXTRA_MRTD_SCAN_RESULT)) {
+            MRTDScanResult scanResult = data.getParcelableExtra(MRTDScanActivity.EXTRA_MRTD_SCAN_RESULT);
+            Intent intent = new Intent(this, ScanResultActivity.class);
+            intent.putExtra(MRTDScanActivity.EXTRA_MRTD_SCAN_RESULT, scanResult);
+            startActivity(intent);
+        } else if (requestCode == REQUEST_CODE_MRTD_SCAN && resultCode == RESULT_OK && data != null && data.hasExtra(MRTDScanActivity.EXTRA_MRTD_SCAN_ERROR)) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle(R.string.failed_to_read_travel_document);
+            String message = data.getStringExtra(MRTDScanActivity.EXTRA_MRTD_SCAN_ERROR);
+            if (message != null) {
+                builder.setMessage(message);
             }
-
-            displayMsgs(msgs);
+            builder.setNeutralButton(android.R.string.ok, null);
+            builder.create().show();
         }
     }
 
-    private String dumpTagData(Tag tag) {
-        StringBuilder sb = new StringBuilder();
-        byte[] id = tag.getId();
-        sb.append("ID (hex): ").append(toHex(id)).append('\n');
-        sb.append("ID (reversed hex): ").append(toReversedHex(id)).append('\n');
-        sb.append("ID (dec): ").append(toDec(id)).append('\n');
-        sb.append("ID (reversed dec): ").append(toReversedDec(id)).append('\n');
-
-        String prefix = "android.nfc.tech.";
-        sb.append("Technologies: ");
-        for (String tech : tag.getTechList()) {
-            sb.append(tech.substring(prefix.length()));
-            sb.append(", ");
-        }
-
-        sb.delete(sb.length() - 2, sb.length());
-
-        for (String tech : tag.getTechList()) {
-            if (tech.equals(MifareClassic.class.getName())) {
-                sb.append('\n');
-                String type = "Unknown";
-
-                try {
-                    MifareClassic mifareTag = MifareClassic.get(tag);
-
-                    switch (mifareTag.getType()) {
-                        case MifareClassic.TYPE_CLASSIC:
-                            type = "Classic";
-                            break;
-                        case MifareClassic.TYPE_PLUS:
-                            type = "Plus";
-                            break;
-                        case MifareClassic.TYPE_PRO:
-                            type = "Pro";
-                            break;
-                    }
-                    sb.append("Mifare Classic type: ");
-                    sb.append(type);
-                    sb.append('\n');
-
-                    sb.append("Mifare size: ");
-                    sb.append(mifareTag.getSize() + " bytes");
-                    sb.append('\n');
-
-                    sb.append("Mifare sectors: ");
-                    sb.append(mifareTag.getSectorCount());
-                    sb.append('\n');
-
-                    sb.append("Mifare blocks: ");
-                    sb.append(mifareTag.getBlockCount());
-                } catch (Exception e) {
-                    sb.append("Mifare classic error: " + e.getMessage());
-                }
-            }
-
-            if (tech.equals(MifareUltralight.class.getName())) {
-                sb.append('\n');
-                MifareUltralight mifareUlTag = MifareUltralight.get(tag);
-                String type = "Unknown";
-                switch (mifareUlTag.getType()) {
-                    case MifareUltralight.TYPE_ULTRALIGHT:
-                        type = "Ultralight";
-                        break;
-                    case MifareUltralight.TYPE_ULTRALIGHT_C:
-                        type = "Ultralight C";
-                        break;
-                }
-                sb.append("Mifare Ultralight type: ");
-                sb.append(type);
-            }
-        }
-
-        return sb.toString();
+    @Override
+    public void onBACChanged(BACSpec bacSpec) {
+        this.bacSpec = bacSpec;
+        invalidateOptionsMenu();
     }
 
-    private String toHex(byte[] bytes) {
-        StringBuilder sb = new StringBuilder();
-        for (int i = bytes.length - 1; i >= 0; --i) {
-            int b = bytes[i] & 0xff;
-            if (b < 0x10)
-                sb.append('0');
-            sb.append(Integer.toHexString(b));
-            if (i > 0) {
-                sb.append(" ");
-            }
-        }
-        return sb.toString();
-    }
-
-    private String toReversedHex(byte[] bytes) {
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < bytes.length; ++i) {
-            if (i > 0) {
-                sb.append(" ");
-            }
-            int b = bytes[i] & 0xff;
-            if (b < 0x10)
-                sb.append('0');
-            sb.append(Integer.toHexString(b));
-        }
-        return sb.toString();
-    }
-
-    private long toDec(byte[] bytes) {
-        long result = 0;
-        long factor = 1;
-        for (int i = 0; i < bytes.length; ++i) {
-            long value = bytes[i] & 0xffl;
-            result += value * factor;
-            factor *= 256l;
-        }
-        return result;
-    }
-
-    private long toReversedDec(byte[] bytes) {
-        long result = 0;
-        long factor = 1;
-        for (int i = bytes.length - 1; i >= 0; --i) {
-            long value = bytes[i] & 0xffl;
-            result += value * factor;
-            factor *= 256l;
-        }
-        return result;
-    }
-
-    private void displayMsgs(NdefMessage[] msgs) {
-        if (msgs == null || msgs.length == 0)
-            return;
-
-        StringBuilder builder = new StringBuilder();
-        List<ParsedNdefRecord> records = NdefMessageParser.parse(msgs[0]);
-        final int size = records.size();
-
-        for (int i = 0; i < size; i++) {
-            ParsedNdefRecord record = records.get(i);
-            String str = record.str();
-            builder.append(str).append("\n");
-        }
-
-        text.setText(builder.toString());
+    private static class StorageKeys {
+        public static final String DOCUMENT_NUMBER = "documentNumber";
+        public static final String DATE_OF_BIRTH = "dateOfBirth";
+        public static final String DATE_OF_EXPIRY = "dateOfExpiry";
     }
 }
