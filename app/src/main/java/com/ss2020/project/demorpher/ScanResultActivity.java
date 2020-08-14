@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -14,6 +15,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.appliedrec.mrtdreader.MRTDScanActivity;
 import com.appliedrec.mrtdreader.MRTDScanResult;
@@ -27,12 +29,12 @@ import com.appliedrec.verid.core.RecognizableFace;
 import com.appliedrec.verid.ui.VerIDSessionIntent;
 
 import java.io.File;
+import java.io.FileOutputStream;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
-public class ScanResultActivity extends RxVerIDActivity {
-
+public class ScanResultActivity extends AppCompatActivity {
     private static final int REQUEST_CODE_LIVENESS_DETECTION = 0;
     Bitmap faceBitmap;
     DetectedFace mrtdFace;
@@ -54,26 +56,20 @@ public class ScanResultActivity extends RxVerIDActivity {
             scanResult = intent.getParcelableExtra(MRTDScanActivity.EXTRA_MRTD_SCAN_RESULT);
         }
         faceBitmap = BitmapFactory.decodeFile(scanResult.getFaceImageFilePath());
-        if (mrtdFace == null && faceBitmap != null && scanResult != null && scanResult.getDocumentNumber() != null) {
-            setContentView(R.layout.activity_loading);
-            final TextView label = findViewById(R.id.label);
-            label.setText(R.string.loading_face_detection);
-            RxVerID rxVerID = getRxVerID();
-            addDisposable(rxVerID.detectRecognizableFacesInImage(faceBitmap, 1).firstOrError()
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(face -> {
-                        mrtdFace = new DetectedFace(face, Bearing.STRAIGHT, Uri.fromFile(new File(scanResult.getFaceImageFilePath())));
-                        showScanResult();
-                        invalidateOptionsMenu();
-                    }, error -> {
-                        showScanResult();
-                        Toast.makeText(ScanResultActivity.this, R.string.failed_to_register_face, Toast.LENGTH_SHORT).show();
-                    }));
-        } else {
-            invalidateOptionsMenu();
-            showScanResult();
+        File file = new File(getExternalFilesDir(Environment.DIRECTORY_DCIM) + File.separator + "train_photo.jpeg");
+        try {
+            FileOutputStream out = new FileOutputStream(file);
+            faceBitmap.compress(Bitmap.CompressFormat.PNG, 90, out);
+            out.flush();
+            out.close();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+
+
+        invalidateOptionsMenu();
+        showScanResult();
+
     }
 
     @Override
@@ -102,7 +98,7 @@ public class ScanResultActivity extends RxVerIDActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_compare_live_face) {
-            captureLiveFace();
+
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -127,15 +123,15 @@ public class ScanResultActivity extends RxVerIDActivity {
         }
     }
 
-    private void captureLiveFace() {
-        if (mrtdFace != null) {
-            addDisposable(getRxVerID().getVerID().subscribe(verID -> {
-                LivenessDetectionSessionSettings sessionSettings = new LivenessDetectionSessionSettings();
-                Intent intent = new VerIDSessionIntent<>(this, verID, sessionSettings);
-                startActivityForResult(intent, REQUEST_CODE_LIVENESS_DETECTION);
-            }, error -> showError(error.getLocalizedMessage())));
-        }
-    }
+//    private void captureLiveFace() {
+//        if (mrtdFace != null) {
+//            addDisposable(getRxVerID().getVerID().subscribe(verID -> {
+//                LivenessDetectionSessionSettings sessionSettings = new LivenessDetectionSessionSettings();
+//                Intent intent = new VerIDSessionIntent<>(this, verID, sessionSettings);
+//                startActivityForResult(intent, REQUEST_CODE_LIVENESS_DETECTION);
+//            }, error -> showError(error.getLocalizedMessage())));
+//        }
+//    }
 
     private void showError(String description) {
         new AlertDialog.Builder(this)
@@ -149,19 +145,7 @@ public class ScanResultActivity extends RxVerIDActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_CODE_LIVENESS_DETECTION && resultCode == RESULT_OK) {
-            RxVerID rxVerID = getRxVerID();
-            addDisposable(rxVerID.getSessionResultFromIntent(data)
-                    .flatMapObservable(result -> rxVerID.getFacesAndImageUrisFromSessionResult(result, Bearing.STRAIGHT))
-                    .filter(face -> (face.getFace() instanceof RecognizableFace) && face.getImageUri() != null)
-                    .firstOrError()
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(face -> {
-                        Intent intent = new Intent(ScanResultActivity.this, ResultActivity.class);
-                        intent.putExtra(ResultActivity.EXTRA_DETECTED_FACE1, mrtdFace);
-                        intent.putExtra(ResultActivity.EXTRA_DETECTED_FACE2, face);
-                        startActivity(intent);
-                    }, error -> showError(error.getLocalizedMessage())));
+
         }
     }
 }
