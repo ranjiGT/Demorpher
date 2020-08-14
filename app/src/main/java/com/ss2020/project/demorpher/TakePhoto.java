@@ -40,6 +40,7 @@ public class TakePhoto extends AppCompatActivity {
     private final String[] REQUIRED_PERMISSIONS = new String[]{"android.permission.CAMERA", "android.permission.WRITE_EXTERNAL_STORAGE"};
     TextureView textureView;
     ImageView guidline;
+    public  CameraX.LensFacing lensFacing = CameraX.LensFacing.BACK;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +49,10 @@ public class TakePhoto extends AppCompatActivity {
 
         textureView = (TextureView) findViewById(R.id.textureView);
         guidline = (ImageView) findViewById(R.id.guidline);
+
+
+
+
 
         if (allPermissionsGranted()) {
             startCamera(); //start camera if permission has been granted by user
@@ -61,11 +66,16 @@ public class TakePhoto extends AppCompatActivity {
 
         CameraX.unbindAll();
 
+
+
         Rational aspectRatio = new Rational(textureView.getWidth(), textureView.getHeight());
         Size screen = new Size(textureView.getWidth(), textureView.getHeight()); //size of the screen
 
         // setting resolution and aspect ratio
-        PreviewConfig pConfig = new PreviewConfig.Builder().setTargetAspectRatio(aspectRatio).setTargetResolution(screen).build();
+        PreviewConfig pConfig = new PreviewConfig.Builder().
+                setLensFacing(lensFacing).
+                setTargetAspectRatio(aspectRatio).
+                setTargetResolution(screen).build();
         Preview preview = new Preview(pConfig);
 
         preview.setOnPreviewOutputUpdateListener(new Preview.OnPreviewOutputUpdateListener() {
@@ -82,9 +92,23 @@ public class TakePhoto extends AppCompatActivity {
         });
 
 
-        ImageCaptureConfig imageCaptureConfig = new ImageCaptureConfig.Builder().setCaptureMode(ImageCapture.CaptureMode.MAX_QUALITY) // to get maximum quality
+        ImageCaptureConfig imageCaptureConfig = new ImageCaptureConfig.Builder()
+                .setLensFacing(lensFacing)
+                .setCaptureMode(ImageCapture.CaptureMode.MAX_QUALITY) // to get maximum quality
                 .setTargetRotation(Surface.ROTATION_0).build();
         final ImageCapture imgCap = new ImageCapture(imageCaptureConfig);
+
+        findViewById(R.id.switch_camera_btn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(lensFacing == CameraX.LensFacing.BACK){
+                    lensFacing = CameraX.LensFacing.FRONT;
+                }else
+                    lensFacing = CameraX.LensFacing.BACK;
+
+                startCamera();
+            }
+        });
 
         // to add button for capturing image
         findViewById(R.id.capture).setOnClickListener(new View.OnClickListener() {
