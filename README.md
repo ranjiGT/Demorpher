@@ -41,3 +41,22 @@ Security Risks involved with the usage of the app.
 Graphs and tables with our results go here.
 
 
+# Some Resources
+- The_magic_passport   -  https://ieeexplore.ieee.org/document/6996240
+
+- Face_demorphing  - https://ieeexplore.ieee.org/document/8119561
+
+- Face demorphing in the presence of facial appearance variations   -  https://ieeexplore.ieee.org/abstract/document/8553430
+
+- FD-GAN - https://ieeexplore.ieee.org/abstract/document/8730323
+
+- Detection of Face Morphing Attacks by Deep Learning - https://link.springer.com/chapter/10.1007/978-3-319-64185-0_9
+
+- Generative Adversarial Networks - https://ieeexplore.ieee.org/abstract/document/8846232
+
+- PRNU Analysis - https://ieeexplore.ieee.org/abstract/document/8846232
+
+- A Survey - https://ieeexplore.ieee.org/abstract/document/8642312
+
+- OVGU guys - https://dl.acm.org/doi/abs/10.1145/3335203.3335721
+
