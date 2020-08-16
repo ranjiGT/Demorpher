@@ -44,13 +44,14 @@ import java.util.Vector;
 
 public class MatchPhotos extends AppCompatActivity {
 
-    private Button addBtn;
+//    private Button addBtn;
     private Button matchBtn;
     private Button testBtn;
-    private ImageView tempTest;
-    private ImageView tempTrain;
+    private ImageView tempCamera;
+    private ImageView tempPassport;
     private TextView result;
-    private TextureView temp_textureview;
+//    private TextureView temp_textureview;
+    private TextView threshold;
 
     //face comparision
     private MobileFaceNet mobileFaceNet;
@@ -71,25 +72,26 @@ public class MatchPhotos extends AppCompatActivity {
 
 
         //connecting components
-        addBtn = (Button) findViewById(R.id.button_temp_add_train_image);
+//        addBtn = (Button) findViewById(R.id.button_temp_add_train_image);
         matchBtn = (Button) findViewById(R.id.button_temp_match);
-        tempTest = (ImageView) findViewById(R.id.image_temp_for_testing);
-        tempTrain = (ImageView) findViewById(R.id.image_temp_for_training);
+        tempCamera = (ImageView) findViewById(R.id.image_temp_for_testing);
+        tempPassport = (ImageView) findViewById(R.id.image_temp_for_training);
         result = (TextView) findViewById(R.id.temp_text_result);
-        temp_textureview = (TextureView) findViewById(R.id.temp_textureView);
+//        temp_textureview = (TextureView) findViewById(R.id.temp_textureView);
         testBtn = (Button) findViewById(R.id.temp_test_button);
+        threshold = (TextView) findViewById(R.id.threshold_text);
 
 
-        bitmap1 = BitmapFactory.decodeFile(getExternalFilesDir(Environment.DIRECTORY_DCIM) + File.separator + "train_photo.jpeg");
-        bitmap2 = BitmapFactory.decodeFile(getExternalFilesDir(Environment.DIRECTORY_DCIM) + File.separator + "photo.jpeg");
+        String thr = " Threshold : " + MobileFaceNet.THRESHOLD;
+        threshold.setText(thr);
 
 
-        // getting the saved photo for testing(live image)
-        Bitmap image = BitmapFactory.decodeFile(getExternalFilesDir(Environment.DIRECTORY_DCIM) + File.separator + "photo.jpeg");
-        tempTest.setImageBitmap(image);
-        // show train image
+        bitmap1 = BitmapFactory.decodeFile(getExternalFilesDir(Environment.DIRECTORY_DCIM) + File.separator + "passport_photo.jpeg");
+        bitmap2 = BitmapFactory.decodeFile(getExternalFilesDir(Environment.DIRECTORY_DCIM) + File.separator + "camera_photo.jpeg");
+
+
+        //Setting up Images
         setImage();
-
 
         // face comparision
         try {
@@ -101,15 +103,15 @@ public class MatchPhotos extends AppCompatActivity {
 
 
         // to take test photo
-        addBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startCamera();
-            }
-        });
+//        addBtn.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                startCamera();
+//            }
+//        });
 
 
-        // start training and testing
+        // start face matching
 
         matchBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -130,152 +132,161 @@ public class MatchPhotos extends AppCompatActivity {
 
     //start temporary methods for testing purpose taken from takephotos.java
 
-    private void startCamera() {
-
-        CameraX.unbindAll();
-
-        Rational aspectRatio = new Rational(temp_textureview.getWidth(), temp_textureview.getHeight());
-        Size screen = new Size(temp_textureview.getWidth(), temp_textureview.getHeight()); //size of the screen
-
-        // setting resolution and aspect ratio
-        PreviewConfig pConfig = new PreviewConfig.Builder().setTargetAspectRatio(aspectRatio).setTargetResolution(screen).build();
-        Preview preview = new Preview(pConfig);
-
-        preview.setOnPreviewOutputUpdateListener(new Preview.OnPreviewOutputUpdateListener() {
-
-            @Override
-            public void onUpdated(Preview.PreviewOutput output) {
-                ViewGroup parent = (ViewGroup) temp_textureview.getParent();
-                parent.removeView(temp_textureview);
-                parent.addView(temp_textureview, 0);
-
-                temp_textureview.setSurfaceTexture(output.getSurfaceTexture());
-                updateTransform();
-            }
-        });
-
-
-        ImageCaptureConfig imageCaptureConfig = new ImageCaptureConfig.Builder().setCaptureMode(ImageCapture.CaptureMode.MAX_QUALITY) // to get maximum quality
-                .setTargetRotation(Surface.ROTATION_0).build();
-        final ImageCapture imgCap = new ImageCapture(imageCaptureConfig);
-
-        // to add button for capturing image
-        findViewById(R.id.click).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                File file = new File(getExternalFilesDir(Environment.DIRECTORY_DCIM) + File.separator + "train_photo.jpeg");
-                imgCap.takePicture(file, new ImageCapture.OnImageSavedListener() {
-
-                    @Override
-                    public void onImageSaved(@NonNull File file) {
-                        String msg = "Captured at " + file.getAbsolutePath();
-                        Toast.makeText(getBaseContext(), msg, Toast.LENGTH_LONG).show();
-
-                        rotateImage(file);
-
-                    }
-
-                    @Override
-                    public void onError(@NonNull ImageCapture.UseCaseError useCaseError, @NonNull String message, @Nullable Throwable cause) {
-                        String msg = "Capture failed : " + message;
-                        Toast.makeText(getBaseContext(), msg, Toast.LENGTH_LONG).show();
-                        if (cause != null) {
-                            cause.printStackTrace();
-                        }
-                    }
-                });
-            }
-        });
-
-        //bind to lifecycle:
-        CameraX.bindToLifecycle((LifecycleOwner) this, preview, imgCap);
-    }
-
-
-    private void updateTransform() {
-        Matrix mx = new Matrix();
-        float w = temp_textureview.getMeasuredWidth();
-        float h = temp_textureview.getMeasuredHeight();
-
-        float cX = w / 2f;
-        float cY = h / 2f;
-
-        int rotationDgr;
-        int rotation = (int) temp_textureview.getRotation();
-
-        switch (rotation) {
-            case Surface.ROTATION_0:
-                rotationDgr = 0;
-                break;
-            case Surface.ROTATION_90:
-                rotationDgr = 90;
-                break;
-            case Surface.ROTATION_180:
-                rotationDgr = 180;
-                break;
-            case Surface.ROTATION_270:
-                rotationDgr = 270;
-                break;
-            default:
-                return;
-        }
-
-        mx.postRotate((float) rotationDgr, cX, cY);
-        temp_textureview.setTransform(mx);
-    }
+//    private void startCamera() {
+//
+//        CameraX.unbindAll();
+//
+//        Rational aspectRatio = new Rational(temp_textureview.getWidth(), temp_textureview.getHeight());
+//        Size screen = new Size(temp_textureview.getWidth(), temp_textureview.getHeight()); //size of the screen
+//
+//        // setting resolution and aspect ratio
+//        PreviewConfig pConfig = new PreviewConfig.Builder().setTargetAspectRatio(aspectRatio).setTargetResolution(screen).build();
+//        Preview preview = new Preview(pConfig);
+//
+//        preview.setOnPreviewOutputUpdateListener(new Preview.OnPreviewOutputUpdateListener() {
+//
+//            @Override
+//            public void onUpdated(Preview.PreviewOutput output) {
+//                ViewGroup parent = (ViewGroup) temp_textureview.getParent();
+//                parent.removeView(temp_textureview);
+//                parent.addView(temp_textureview, 0);
+//
+//                temp_textureview.setSurfaceTexture(output.getSurfaceTexture());
+//                updateTransform();
+//            }
+//        });
+//
+//
+//        ImageCaptureConfig imageCaptureConfig = new ImageCaptureConfig.Builder().setCaptureMode(ImageCapture.CaptureMode.MAX_QUALITY) // to get maximum quality
+//                .setTargetRotation(Surface.ROTATION_0).build();
+//        final ImageCapture imgCap = new ImageCapture(imageCaptureConfig);
+//
+//        // to add button for capturing image
+//        findViewById(R.id.click).setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                File file = new File(getExternalFilesDir(Environment.DIRECTORY_DCIM) + File.separator + "train_photo.jpeg");
+//                imgCap.takePicture(file, new ImageCapture.OnImageSavedListener() {
+//
+//                    @Override
+//                    public void onImageSaved(@NonNull File file) {
+//                        String msg = "Captured at " + file.getAbsolutePath();
+//                        Toast.makeText(getBaseContext(), msg, Toast.LENGTH_LONG).show();
+//
+//                        rotateImage(file);
+//
+//                    }
+//
+//                    @Override
+//                    public void onError(@NonNull ImageCapture.UseCaseError useCaseError, @NonNull String message, @Nullable Throwable cause) {
+//                        String msg = "Capture failed : " + message;
+//                        Toast.makeText(getBaseContext(), msg, Toast.LENGTH_LONG).show();
+//                        if (cause != null) {
+//                            cause.printStackTrace();
+//                        }
+//                    }
+//                });
+//            }
+//        });
+//
+//        //bind to lifecycle:
+//        CameraX.bindToLifecycle((LifecycleOwner) this, preview, imgCap);
+//    }
 
 
-    public void rotateImage(File file) {
-        try {
+//    private void updateTransform() {
+//        Matrix mx = new Matrix();
+//        float w = temp_textureview.getMeasuredWidth();
+//        float h = temp_textureview.getMeasuredHeight();
+//
+//        float cX = w / 2f;
+//        float cY = h / 2f;
+//
+//        int rotationDgr;
+//        int rotation = (int) temp_textureview.getRotation();
+//
+//        switch (rotation) {
+//            case Surface.ROTATION_0:
+//                rotationDgr = 0;
+//                break;
+//            case Surface.ROTATION_90:
+//                rotationDgr = 90;
+//                break;
+//            case Surface.ROTATION_180:
+//                rotationDgr = 180;
+//                break;
+//            case Surface.ROTATION_270:
+//                rotationDgr = 270;
+//                break;
+//            default:
+//                return;
+//        }
+//
+//        mx.postRotate((float) rotationDgr, cX, cY);
+//        temp_textureview.setTransform(mx);
+//    }
 
-            ExifInterface exif = new ExifInterface(file.getPath());
-            int orientation = exif.getAttributeInt(
-                    ExifInterface.TAG_ORIENTATION,
-                    ExifInterface.ORIENTATION_NORMAL);
 
-            int angle = 0;
-
-            if (orientation == ExifInterface.ORIENTATION_ROTATE_90) {
-                angle = 90;
-            } else if (orientation == ExifInterface.ORIENTATION_ROTATE_180) {
-                angle = 180;
-            } else if (orientation == ExifInterface.ORIENTATION_ROTATE_270) {
-                angle = 270;
-            }
-
-            Matrix mat = new Matrix();
-            mat.postRotate(angle);
-            BitmapFactory.Options options = new BitmapFactory.Options();
-            options.inSampleSize = 2;
-
-            Bitmap bmp = BitmapFactory.decodeStream(new FileInputStream(file),
-                    null, options);
-            Bitmap bitmap = Bitmap.createBitmap(bmp, 0, 0, bmp.getWidth(),
-                    bmp.getHeight(), mat, true);
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100,
-                    outputStream);
-            FileOutputStream out = new FileOutputStream(getExternalFilesDir(Environment.DIRECTORY_DCIM) + File.separator + "train_photo.jpeg");
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
-            out.close();
-
-            setImage();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (OutOfMemoryError oom) {
-
-            Toast.makeText(getApplicationContext(), "Out of Memory", Toast.LENGTH_SHORT).show();
-
-        }
-    }
-
-    private void setImage(){
-        Bitmap image2 = BitmapFactory.decodeFile(getExternalFilesDir(Environment.DIRECTORY_DCIM) + File.separator + "train_photo.jpeg");
-        tempTrain.setImageBitmap(image2);
-    }
+//    public void rotateImage(File file) {
+//        try {
+//
+//            ExifInterface exif = new ExifInterface(file.getPath());
+//            int orientation = exif.getAttributeInt(
+//                    ExifInterface.TAG_ORIENTATION,
+//                    ExifInterface.ORIENTATION_NORMAL);
+//
+//            int angle = 0;
+//
+//            if (orientation == ExifInterface.ORIENTATION_ROTATE_90) {
+//                angle = 90;
+//            } else if (orientation == ExifInterface.ORIENTATION_ROTATE_180) {
+//                angle = 180;
+//            } else if (orientation == ExifInterface.ORIENTATION_ROTATE_270) {
+//                angle = 270;
+//            }
+//
+//            Matrix mat = new Matrix();
+//            mat.postRotate(angle);
+//            BitmapFactory.Options options = new BitmapFactory.Options();
+//            options.inSampleSize = 2;
+//
+//            Bitmap bmp = BitmapFactory.decodeStream(new FileInputStream(file),
+//                    null, options);
+//            Bitmap bitmap = Bitmap.createBitmap(bmp, 0, 0, bmp.getWidth(),
+//                    bmp.getHeight(), mat, true);
+//            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+//            bitmap.compress(Bitmap.CompressFormat.JPEG, 100,
+//                    outputStream);
+//            FileOutputStream out = new FileOutputStream(getExternalFilesDir(Environment.DIRECTORY_DCIM) + File.separator + "train_photo.jpeg");
+//            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
+//            out.close();
+//
+//            setImage();
+//
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        } catch (OutOfMemoryError oom) {
+//
+//            Toast.makeText(getApplicationContext(), "Out of Memory", Toast.LENGTH_SHORT).show();
+//
+//        }
+//    }
 
     //end temporary methods for testing purpose taken from takephotos.java
+
+    private void setImage(){
+        Bitmap image = BitmapFactory.decodeFile(getExternalFilesDir(Environment.DIRECTORY_DCIM) + File.separator + "camera_photo.jpeg");
+        Bitmap image2 = BitmapFactory.decodeFile(getExternalFilesDir(Environment.DIRECTORY_DCIM) + File.separator + "passport_photo.jpeg");
+
+        if(image != null) {
+            Bitmap small_image = Bitmap.createScaledBitmap(image, 300, 300, false);
+            tempCamera.setImageBitmap(small_image);
+        }
+
+
+        tempPassport.setImageBitmap(image2);
+    }
+
 
 
     /**
@@ -314,8 +325,8 @@ public class MatchPhotos extends AppCompatActivity {
         bitmapCrop2 = FaceMatchUtil.crop(bitmapTemp2, rect2);
 
 
-        tempTest.setImageBitmap(bitmapCrop1);
-        tempTrain.setImageBitmap(bitmapCrop2);
+        tempCamera.setImageBitmap(bitmapCrop2);
+        tempPassport.setImageBitmap(bitmapCrop1);
     }
 
 
@@ -331,14 +342,16 @@ public class MatchPhotos extends AppCompatActivity {
         float same = mobileFaceNet.compare(bitmapCrop1, bitmapCrop2); //Just this useful code, everything else is UI
 
         String text = "Similarity :" + same;
-//        if (same > MobileFaceNet.THRESHOLD) {
-//            text = text + "，" + "True";
-//            result.setTextColor(getResources().getColor(android.R.color.holo_green_light));
-//        } else {
-//            text = text + "，" + "False";
-//            result.setTextColor(getResources().getColor(android.R.color.holo_red_light));
-//        }
-        text = text + " Threshold :" + MobileFaceNet.THRESHOLD;
+        if (same > MobileFaceNet.THRESHOLD) {
+            text = text + "，" + "True";
+            result.setTextColor(getResources().getColor(android.R.color.holo_green_light));
+        } else {
+            text = text + "，" + "False";
+            result.setTextColor(getResources().getColor(android.R.color.holo_red_light));
+        }
+
+
+//        text = text + " Threshold :" + MobileFaceNet.THRESHOLD;
         result.setText(text);
     }
 

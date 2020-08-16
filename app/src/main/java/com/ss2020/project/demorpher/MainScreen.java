@@ -3,14 +3,20 @@ package com.ss2020.project.demorpher;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.os.Environment;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+
+import java.io.File;
 
 
 public class MainScreen extends AppCompatActivity {
@@ -20,6 +26,7 @@ public class MainScreen extends AppCompatActivity {
 
     Button take_photo;
     Button viewPhotos;
+    ImageView main_screen_image;
 
     public static boolean hasPermissions(Context context, String... permissions) {
         if (context != null && permissions != null) {
@@ -41,6 +48,13 @@ public class MainScreen extends AppCompatActivity {
         //connecting the components
         take_photo = (Button) findViewById(R.id.btn_take_photo);
         viewPhotos = (Button) findViewById(R.id.btn_view_photos);
+        main_screen_image = (ImageView) findViewById(R.id.main_screen_image);
+
+
+        Bitmap main_image = BitmapFactory.decodeFile(getExternalFilesDir(Environment.DIRECTORY_DCIM) + File.separator + "passport_photo.jpeg");
+        if(main_image != null)
+            main_screen_image.setImageBitmap(main_image);
+
 
 
         viewPhotos.setOnClickListener(new View.OnClickListener() {

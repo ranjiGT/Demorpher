@@ -3,6 +3,7 @@ package com.ss2020.project.demorpher;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
 import android.os.Bundle;
@@ -13,6 +14,7 @@ import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -40,6 +42,10 @@ public class TakePhoto extends AppCompatActivity {
     private final String[] REQUIRED_PERMISSIONS = new String[]{"android.permission.CAMERA", "android.permission.WRITE_EXTERNAL_STORAGE"};
     TextureView textureView;
     ImageView guidline;
+    Button retake;
+    Button capture;
+    Button switch_cam;
+    Boolean flipRequired = false;
     public  CameraX.LensFacing lensFacing = CameraX.LensFacing.BACK;
 
     @Override
@@ -49,7 +55,10 @@ public class TakePhoto extends AppCompatActivity {
 
         textureView = (TextureView) findViewById(R.id.textureView);
         guidline = (ImageView) findViewById(R.id.guidline);
-
+        retake = (Button) findViewById(R.id.retake_btn);
+        capture = (Button) findViewById(R.id.capture);
+        switch_cam = (Button) findViewById(R.id.switch_camera_btn);
+        retake.setVisibility(View.GONE);
 
 
 
@@ -59,14 +68,25 @@ public class TakePhoto extends AppCompatActivity {
         } else {
             ActivityCompat.requestPermissions(this, REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS);
         }
+
+        retake.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startCamera();
+                guidline.setImageDrawable(getDrawable(R.drawable.face_guidline));
+
+                retake.setVisibility(View.GONE);
+                capture.setVisibility(View.VISIBLE);
+                switch_cam.setVisibility(View.VISIBLE);
+
+            }
+        });
     }
 
 
     private void startCamera() {
 
         CameraX.unbindAll();
-
-
 
         Rational aspectRatio = new Rational(textureView.getWidth(), textureView.getHeight());
         Size screen = new Size(textureView.getWidth(), textureView.getHeight()); //size of the screen
@@ -98,23 +118,25 @@ public class TakePhoto extends AppCompatActivity {
                 .setTargetRotation(Surface.ROTATION_0).build();
         final ImageCapture imgCap = new ImageCapture(imageCaptureConfig);
 
-        findViewById(R.id.switch_camera_btn).setOnClickListener(new View.OnClickListener() {
+        switch_cam.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(lensFacing == CameraX.LensFacing.BACK){
                     lensFacing = CameraX.LensFacing.FRONT;
-                }else
+                    flipRequired = true;
+                }else {
                     lensFacing = CameraX.LensFacing.BACK;
-
+                    flipRequired = false;
+                }
                 startCamera();
             }
         });
 
         // to add button for capturing image
-        findViewById(R.id.capture).setOnClickListener(new View.OnClickListener() {
+        capture.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                File file = new File(getExternalFilesDir(Environment.DIRECTORY_DCIM) + File.separator + "photo.jpeg");
+                File file = new File(getExternalFilesDir(Environment.DIRECTORY_DCIM) + File.separator + "camera_photo.jpeg");
                 imgCap.takePicture(file, new ImageCapture.OnImageSavedListener() {
 
                     @Override
@@ -226,11 +248,19 @@ public class TakePhoto extends AppCompatActivity {
             Bitmap bitmap = Bitmap.createBitmap(bmp, 0, 0, bmp.getWidth(),
                     bmp.getHeight(), mat, true);
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100,
-                    outputStream);
-            FileOutputStream out = new FileOutputStream(getExternalFilesDir(Environment.DIRECTORY_DCIM) + File.separator + "photo.jpeg");
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
+            if(flipRequired)
+                bitmap = flip(bitmap);
+            FileOutputStream out = new FileOutputStream(getExternalFilesDir(Environment.DIRECTORY_DCIM) + File.separator + "camera_photo.jpeg");
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
             out.close();
+
+            guidline.setImageBitmap(bitmap);
+            textureView.setTransform(mat);
+
+            capture.setVisibility(View.INVISIBLE);
+            switch_cam.setVisibility(View.INVISIBLE);
+            retake.setVisibility(View.VISIBLE);
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -241,4 +271,17 @@ public class TakePhoto extends AppCompatActivity {
         }
     }
 
+    public Bitmap flip(Bitmap bitmap){
+        Bitmap bOutput;
+        Matrix matrix = new Matrix();
+        matrix.preScale(-1.0f, 1.0f);
+        bOutput = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+        return bOutput;
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        CameraX.unbindAll();
+    }
 }

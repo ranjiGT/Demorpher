@@ -10,6 +10,7 @@
         android:id="@+id/image_temp_for_testing"
         android:layout_width="150dp"
         android:layout_height="150dp"
+        android:layout_marginTop="16dp"
         app:layout_constraintEnd_toStartOf="@+id/image_temp_for_training"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -19,6 +20,7 @@
         android:id="@+id/image_temp_for_training"
         android:layout_width="150dp"
         android:layout_height="150dp"
+        android:layout_marginTop="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/image_temp_for_testing"
         app:layout_constraintTop_toTopOf="parent"
@@ -28,20 +30,14 @@
         android:id="@+id/temp_text_result"
         android:layout_width="157dp"
         android:layout_height="47dp"
-        android:layout_marginBottom="40dp"
+        android:layout_marginEnd="32dp"
         android:text="Result"
+        android:textAlignment="center"
         android:textSize="12sp"
-        app:layout_constraintBottom_toTopOf="@+id/button_layout"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <TextureView
-        android:id="@+id/temp_textureView"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/temp_text_result"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/image_temp_for_testing" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <LinearLayout
         android:id="@+id/button_layout"
@@ -55,20 +51,6 @@
         android:gravity="center"
         android:layout_marginBottom="20dp"
         app:layout_goneMarginBottom="10dp">
-
-        <Button
-            android:id="@+id/button_temp_add_train_image"
-            android:layout_width="wrap_content"
-            android:layout_height="45dp"
-            android:layout_marginLeft="10dp"
-            android:text="Add" />
-
-        <Button
-            android:id="@+id/click"
-            android:layout_width="wrap_content"
-            android:layout_height="45dp"
-            android:layout_marginLeft="10dp"
-            android:text="click" />
 
         <Button
             android:id="@+id/temp_test_button"
@@ -90,8 +72,46 @@
         android:layout_width="100dp"
         android:layout_height="60dp"
         android:text="@string/match"
+        android:textAlignment="center"
         android:textSize="30sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/temp_text_result"
+        app:layout_constraintHorizontal_bias="0.442"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/temp_textureView" />
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="68dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="125dp"
+        android:text="Live Camera"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toStartOf="@+id/textView5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/image_temp_for_testing" />
+
+    <TextView
+        android:id="@+id/textView5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="125dp"
+        android:layout_marginTop="32dp"
+        android:text="Passport"
+        android:textStyle="bold"
+        app:layout_constraintStart_toEndOf="@+id/textView4"
+        app:layout_constraintTop_toBottomOf="@+id/image_temp_for_training" />
+
+    <TextView
+        android:id="@+id/threshold_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        app:layout_constraintBottom_toTopOf="@+id/button_layout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/temp_text_result" />
 </androidx.constraintlayout.widget.ConstraintLayout>

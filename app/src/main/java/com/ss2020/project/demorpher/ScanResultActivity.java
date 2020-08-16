@@ -3,7 +3,6 @@ package com.ss2020.project.demorpher;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.text.TextUtils;
@@ -19,20 +18,10 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.appliedrec.mrtdreader.MRTDScanActivity;
 import com.appliedrec.mrtdreader.MRTDScanResult;
-import com.appliedrec.rxverid.RxVerID;
-import com.appliedrec.uielements.RxVerIDActivity;
-import com.appliedrec.uielements.facecomparison.ResultActivity;
-import com.appliedrec.verid.core.Bearing;
 import com.appliedrec.verid.core.DetectedFace;
-import com.appliedrec.verid.core.LivenessDetectionSessionSettings;
-import com.appliedrec.verid.core.RecognizableFace;
-import com.appliedrec.verid.ui.VerIDSessionIntent;
 
 import java.io.File;
 import java.io.FileOutputStream;
-
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.schedulers.Schedulers;
 
 public class ScanResultActivity extends AppCompatActivity {
     private static final int REQUEST_CODE_LIVENESS_DETECTION = 0;
@@ -56,15 +45,7 @@ public class ScanResultActivity extends AppCompatActivity {
             scanResult = intent.getParcelableExtra(MRTDScanActivity.EXTRA_MRTD_SCAN_RESULT);
         }
         faceBitmap = BitmapFactory.decodeFile(scanResult.getFaceImageFilePath());
-        File file = new File(getExternalFilesDir(Environment.DIRECTORY_DCIM) + File.separator + "train_photo.jpeg");
-        try {
-            FileOutputStream out = new FileOutputStream(file);
-            faceBitmap.compress(Bitmap.CompressFormat.PNG, 90, out);
-            out.flush();
-            out.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+
 
 
         invalidateOptionsMenu();
@@ -91,14 +72,24 @@ public class ScanResultActivity extends AppCompatActivity {
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        menu.findItem(R.id.action_compare_live_face).setEnabled(mrtdFace != null);
+        menu.findItem(R.id.action_save_passport_face).setEnabled(true);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.action_compare_live_face) {
-
+        if (item.getItemId() == R.id.action_save_passport_face) {
+            File file = new File(getExternalFilesDir(Environment.DIRECTORY_DCIM) + File.separator + "passport_photo.jpeg");
+            try {
+                FileOutputStream out = new FileOutputStream(file);
+                faceBitmap.compress(Bitmap.CompressFormat.PNG, 90, out);
+                out.flush();
+                out.close();
+                String msg = "Saved at " + file.getAbsolutePath();
+                Toast.makeText(getBaseContext(), msg, Toast.LENGTH_SHORT).show();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             return true;
         }
         return super.onOptionsItemSelected(item);

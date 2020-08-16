@@ -29,7 +29,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/btn_demorph"
         app:layout_constraintStart_toEndOf="@+id/btn_nfc_scan"
-        app:layout_constraintTop_toBottomOf="@+id/imageView2" />
+        app:layout_constraintTop_toBottomOf="@+id/main_screen_image" />
 
     <Button
         android:id="@+id/btn_demorph"
@@ -64,7 +64,7 @@
         app:layout_constraintTop_toBottomOf="@+id/btn_demorph" />
 
     <ImageView
-        android:id="@+id/imageView2"
+        android:id="@+id/main_screen_image"
         android:layout_width="273dp"
         android:layout_height="134dp"
         android:layout_marginTop="100dp"
