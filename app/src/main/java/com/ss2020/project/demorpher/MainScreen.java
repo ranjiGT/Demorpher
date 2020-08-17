@@ -1,35 +1,43 @@
 package com.ss2020.project.demorpher;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.core.content.FileProvider;
-
-import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.net.Uri;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.StrictMode;
-import android.provider.MediaStore;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+
 import java.io.File;
-import java.lang.reflect.Method;
+
 
 public class MainScreen extends AppCompatActivity {
 
     private static final int CAMERA_PERMISSION_CODE = 111;
     private static final int CAMERA_REQUEST_CODE = 999;
+
     Button take_photo;
     Button viewPhotos;
+    ImageView main_screen_image;
+
+    public static boolean hasPermissions(Context context, String... permissions) {
+        if (context != null && permissions != null) {
+            for (String permission : permissions) {
+                if (ActivityCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +48,13 @@ public class MainScreen extends AppCompatActivity {
         //connecting the components
         take_photo = (Button) findViewById(R.id.btn_take_photo);
         viewPhotos = (Button) findViewById(R.id.btn_view_photos);
+        main_screen_image = (ImageView) findViewById(R.id.main_screen_image);
+
+
+        Bitmap main_image = BitmapFactory.decodeFile(getExternalFilesDir(Environment.DIRECTORY_DCIM) + File.separator + "passport_photo.jpeg");
+        if(main_image != null)
+            main_screen_image.setImageBitmap(main_image);
+
 
 
         viewPhotos.setOnClickListener(new View.OnClickListener() {
@@ -64,7 +79,7 @@ public class MainScreen extends AppCompatActivity {
 
                 if (!hasPermissions(MainScreen.this, PERMISSIONS)) {
                     ActivityCompat.requestPermissions(MainScreen.this, PERMISSIONS, PERMISSION_ALL);
-                }else {
+                } else {
                     Intent i = new Intent(MainScreen.this, TakePhoto.class);
                     startActivity(i);
                 }
@@ -74,18 +89,6 @@ public class MainScreen extends AppCompatActivity {
 
 
     }
-
-    public static boolean hasPermissions(Context context, String... permissions) {
-        if (context != null && permissions != null) {
-            for (String permission : permissions) {
-                if (ActivityCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -98,5 +101,25 @@ public class MainScreen extends AppCompatActivity {
             }
         }
 
+    }
+
+    public void nfcScan(View view) {
+        Intent intent = new Intent(this, NfcScan.class);
+        startActivity(intent);
+    }
+
+    public void demorph(View view) {
+        Intent intent = new Intent(this, DemorphPhotos.class);
+        startActivity(intent);
+    }
+
+    public void matchPhoto(View view) {
+        Intent intent = new Intent(this, MatchPhotos.class);
+        startActivity(intent);
+    }
+
+    public void about(View view) {
+        Intent intent = new Intent(this, AboutUs.class);
+        startActivity(intent);
     }
 }

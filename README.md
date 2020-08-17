@@ -41,7 +41,6 @@ Security Risks involved with the usage of the app.
 Graphs and tables with our results go here.
 
 
-
 # Some Resources
 - The_magic_passport   -  https://ieeexplore.ieee.org/document/6996240
 

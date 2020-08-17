@@ -6,93 +6,81 @@
     android:layout_height="match_parent"
     tools:context=".MainScreen">
 
-    <include
-        android:id="@+id/include"
-        layout="@layout/tool_bar"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/btn_nfc_scan"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:background="#009688"
-        android:elevation="5dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:onClick="nfcScan"
         android:text="@string/nfc_scan"
-        android:textColor="#FFFFFF"
-        app:layout_constraintBottom_toTopOf="@+id/btn_match"
-        app:layout_constraintEnd_toStartOf="@+id/btn_take_photo"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/include" />
+        app:layout_constraintBaseline_toBaselineOf="@+id/btn_take_photo"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <Button
         android:id="@+id/btn_take_photo"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:background="#009688"
-        android:elevation="5dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:onClick="takePhoto"
         android:text="@string/take_photo"
-        android:textColor="#FFFFFF"
-        app:layout_constraintBottom_toTopOf="@+id/btn_demorph"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/btn_nfc_scan"
-        app:layout_constraintTop_toBottomOf="@+id/include" />
-
-    <Button
-        android:id="@+id/btn_match"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:background="#009688"
-        android:elevation="5dp"
-        android:text="@string/match"
-        android:textColor="#FFFFFF"
-        app:layout_constraintBottom_toTopOf="@+id/btn_view_photos"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/btn_demorph"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btn_nfc_scan" />
+        app:layout_constraintStart_toEndOf="@+id/btn_nfc_scan"
+        app:layout_constraintTop_toBottomOf="@+id/main_screen_image" />
 
     <Button
         android:id="@+id/btn_demorph"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:background="#009688"
-        android:elevation="5dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:onClick="demorph"
         android:text="@string/demorph"
-        android:textColor="#FFFFFF"
-        app:layout_constraintBottom_toTopOf="@+id/btn_about"
+        app:layout_constraintBaseline_toBaselineOf="@+id/btn_take_photo"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <Button
+        android:id="@+id/btn_match_photo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="matchPhoto"
+        android:text="@string/match"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/btn_nfc_scan"
+        app:layout_constraintStart_toStartOf="@+id/btn_nfc_scan"
+        app:layout_constraintTop_toBottomOf="@+id/btn_nfc_scan" />
+
+    <Button
+        android:id="@+id/btn_about_us"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="about"
+        android:text="@string/AboutUs"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/btn_demorph"
+        app:layout_constraintStart_toStartOf="@+id/btn_demorph"
+        app:layout_constraintTop_toBottomOf="@+id/btn_demorph" />
+
+    <ImageView
+        android:id="@+id/main_screen_image"
+        android:layout_width="273dp"
+        android:layout_height="134dp"
+        android:layout_marginTop="100dp"
+        android:contentDescription="@string/image"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/btn_match"
-        app:layout_constraintTop_toBottomOf="@+id/btn_take_photo" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@android:drawable/ic_menu_camera" />
 
     <Button
         android:id="@+id/btn_view_photos"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:background="#009688"
-        android:elevation="5dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:text="@string/view_photos"
-        android:textColor="#FFFFFF"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/btn_about"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btn_match" />
-
-    <Button
-        android:id="@+id/btn_about"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:background="#009688"
-        android:elevation="5dp"
-        android:text="@string/AboutUs"
-        android:textColor="#FFFFFF"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/btn_view_photos"
-        app:layout_constraintTop_toBottomOf="@+id/btn_demorph" />
-
-
+        app:layout_constraintEnd_toStartOf="@+id/btn_about_us"
+        app:layout_constraintStart_toEndOf="@+id/btn_match_photo"
+        app:layout_constraintTop_toBottomOf="@+id/btn_take_photo" />
 </androidx.constraintlayout.widget.ConstraintLayout>
