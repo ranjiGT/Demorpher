@@ -8,7 +8,7 @@ Summer Semester 2020 Project
 Face Morphing attacks are a threat to current travel document security. We must Design, Implement and test an Android App countering FMA with a de-morphing approach.
 
 # 2 Tool set
-For Reading face images from a document using NFC we are goinf to use jmrtd (https://jmrtd.org/)
+For Reading face images from a document using NFC we are going to use jmrtd (https://jmrtd.org/)
 For taking a live-image with the camera we are thinking of using a fixed ratio with guidelines to make sure every face is in the same position
 For matching we have not found a workaround on how to implement dlib in an android aplication so perhaps some help from the supervisor is required.
 De-morphing – need some help aswell for a toolset to help us in developing the app
