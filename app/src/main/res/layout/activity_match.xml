@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/bg"
     tools:context=".MatchPhotos">
 
     <ImageView
@@ -28,28 +29,28 @@
 
     <TextView
         android:id="@+id/temp_text_result"
-        android:layout_width="157dp"
+        android:layout_width="150dp"
         android:layout_height="47dp"
-        android:layout_marginEnd="32dp"
-        android:text="Result"
+        android:text="-"
         android:textAlignment="center"
-        android:textSize="12sp"
+        android:textSize="30sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintStart_toEndOf="@+id/match_text"
+        app:layout_constraintTop_toBottomOf="@+id/image_temp_for_training" />
 
     <LinearLayout
         android:id="@+id/button_layout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:gravity="center"
         android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        android:gravity="center"
-        android:layout_marginBottom="20dp"
         app:layout_goneMarginBottom="10dp">
 
         <Button
@@ -57,21 +58,27 @@
             android:layout_width="wrap_content"
             android:layout_height="45dp"
             android:layout_marginLeft="10dp"
+            android:layout_marginEnd="20dp"
+            android:background="@drawable/button"
             android:text="Detect" />
 
         <Button
             android:id="@+id/button_temp_match"
             android:layout_width="wrap_content"
             android:layout_height="45dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="10dp"
+            android:background="@drawable/button"
             android:text="@string/match" />
+
     </LinearLayout>
 
     <TextView
         android:id="@+id/match_text"
         style="@android:style/Widget.DeviceDefault.TextView"
-        android:layout_width="100dp"
+        android:layout_width="wrap_content"
         android:layout_height="60dp"
-        android:text="@string/match"
+        android:text="Similarity"
         android:textAlignment="center"
         android:textSize="30sp"
         android:textStyle="bold"
@@ -79,7 +86,7 @@
         app:layout_constraintEnd_toStartOf="@+id/temp_text_result"
         app:layout_constraintHorizontal_bias="0.442"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/image_temp_for_testing" />
 
     <TextView
         android:id="@+id/textView4"
@@ -109,9 +116,46 @@
         android:id="@+id/threshold_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="32dp"
         android:text="TextView"
+        android:textColor="#FFFFFF"
+        android:textSize="30sp"
+        android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/button_layout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/temp_text_result" />
+
+    <Button
+        android:id="@+id/next_demorph_button"
+        android:layout_width="wrap_content"
+        android:layout_height="45dp"
+        android:layout_marginBottom="30dp"
+        android:background="@drawable/button_next"
+        android:text="Demorph"
+        android:textColor="#FFFFFF"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/button_layout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageView
+        android:id="@+id/detected_face_cam"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_marginTop="30dp"
+        app:layout_constraintEnd_toStartOf="@+id/detected_face_pass"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView4"
+        tools:srcCompat="@tools:sample/avatars" />
+
+    <ImageView
+        android:id="@+id/detected_face_pass"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_marginTop="30dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/detected_face_cam"
+        app:layout_constraintTop_toBottomOf="@+id/textView5"
+        tools:srcCompat="@tools:sample/avatars" />
 </androidx.constraintlayout.widget.ConstraintLayout>

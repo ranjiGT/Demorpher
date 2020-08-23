@@ -1,6 +1,8 @@
 package com.ss2020.project.demorpher;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -9,12 +11,14 @@ import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
 import com.appliedrec.mrtdreader.MRTDScanActivity;
 import com.appliedrec.mrtdreader.MRTDScanResult;
@@ -28,6 +32,8 @@ public class ScanResultActivity extends AppCompatActivity {
     Bitmap faceBitmap;
     DetectedFace mrtdFace;
     MRTDScanResult scanResult;
+    Button next_capture;
+    SharedPreferences sharedPreferences;
 
     private static class StorageKeys {
         public static final String MRTD_FACE = "mrtdFace";
@@ -38,6 +44,10 @@ public class ScanResultActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Intent intent = getIntent();
+
+
+        sharedPreferences = getSharedPreferences("enableDisable", MODE_PRIVATE);
+        next_capture = (Button) findViewById(R.id.next_capture_btn);
         if (savedInstanceState != null) {
             mrtdFace = savedInstanceState.getParcelable(StorageKeys.MRTD_FACE);
             scanResult = savedInstanceState.getParcelable(StorageKeys.SCAN_RESULT);
@@ -46,11 +56,39 @@ public class ScanResultActivity extends AppCompatActivity {
         }
         faceBitmap = BitmapFactory.decodeFile(scanResult.getFaceImageFilePath());
 
-
+//        next_capture.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                int PERMISSION_ALL = 1;
+//                String[] PERMISSIONS = {
+//                        android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
+//                        android.Manifest.permission.CAMERA
+//                };
+//
+//                if (!hasPermissions(ScanResultActivity.this, PERMISSIONS)) {
+//                    ActivityCompat.requestPermissions(ScanResultActivity.this, PERMISSIONS, PERMISSION_ALL);
+//                } else {
+//                    Intent i = new Intent(ScanResultActivity.this, TakePhoto.class);
+//                    startActivity(i);
+//                }
+//
+//            }
+//        });
 
         invalidateOptionsMenu();
         showScanResult();
 
+    }
+
+    private boolean hasPermissions(ScanResultActivity scanResultActivity, String[] permissions) {
+        if (getApplicationContext() != null && permissions != null) {
+            for (String permission : permissions) {
+                if (ActivityCompat.checkSelfPermission(getApplicationContext(), permission) != PackageManager.PERMISSION_GRANTED) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     @Override
@@ -87,9 +125,19 @@ public class ScanResultActivity extends AppCompatActivity {
                 out.close();
                 String msg = "Saved at " + file.getAbsolutePath();
                 Toast.makeText(getBaseContext(), msg, Toast.LENGTH_SHORT).show();
+
+                if(faceBitmap != null){
+                    sharedPreferences.edit().putBoolean("hasPassportImage", true).apply();
+                }else
+                    sharedPreferences.edit().putBoolean("hasPassportImage", false).apply();
+                sharedPreferences.edit().putBoolean("isMatched", false).apply();
+
+
             } catch (Exception e) {
                 e.printStackTrace();
             }
+
+
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -107,6 +155,23 @@ public class ScanResultActivity extends AppCompatActivity {
         ((TextView)findViewById(R.id.nationality)).setText(scanResult.getNationality());
         ((TextView)findViewById(R.id.gender)).setText(scanResult.getGender());
         ((TextView)findViewById(R.id.dateOfBirth)).setText(scanResult.getDateOfBirth());
+        ((Button)findViewById(R.id.next_match_btn)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int PERMISSION_ALL = 1;
+                String[] PERMISSIONS = {
+                        android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                        android.Manifest.permission.CAMERA
+                };
+
+                if (!hasPermissions(ScanResultActivity.this, PERMISSIONS)) {
+                    ActivityCompat.requestPermissions(ScanResultActivity.this, PERMISSIONS, PERMISSION_ALL);
+                } else {
+                    Intent i = new Intent(ScanResultActivity.this, TakePhoto.class);
+                    startActivity(i);
+                }
+            }
+        });
         if (faceBitmap != null) {
             ((ImageView)findViewById(R.id.imageView)).setImageBitmap(faceBitmap);
         } else {

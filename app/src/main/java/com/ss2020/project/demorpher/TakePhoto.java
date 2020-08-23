@@ -1,15 +1,20 @@
 package com.ss2020.project.demorpher;
 
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Matrix;
-import android.media.ExifInterface;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Rational;
 import android.util.Size;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
@@ -20,6 +25,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.camera.core.CameraX;
 import androidx.camera.core.ImageCapture;
@@ -28,16 +34,25 @@ import androidx.camera.core.Preview;
 import androidx.camera.core.PreviewConfig;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.exifinterface.media.ExifInterface;
 import androidx.lifecycle.LifecycleOwner;
+
+import com.appliedrec.mrtdreader.MRTDScanActivity;
+import com.appliedrec.mrtdreader.MRTDScanResult;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+
+import static com.ss2020.project.demorpher.NfcScan.exifToDegrees;
 
 public class TakePhoto extends AppCompatActivity {
 
+    private static final int RESULT_LOAD_IMAGE = 1;
     private int REQUEST_CODE_PERMISSIONS = 101;
     private final String[] REQUIRED_PERMISSIONS = new String[]{"android.permission.CAMERA", "android.permission.WRITE_EXTERNAL_STORAGE"};
     TextureView textureView;
@@ -45,7 +60,9 @@ public class TakePhoto extends AppCompatActivity {
     Button retake;
     Button capture;
     Button switch_cam;
+    Button next_match_btn;
     Boolean flipRequired = false;
+    SharedPreferences sharedPreferences;
     public  CameraX.LensFacing lensFacing = CameraX.LensFacing.BACK;
 
     @Override
@@ -53,11 +70,16 @@ public class TakePhoto extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_take_photo);
 
+
+        sharedPreferences = getSharedPreferences("enableDisable", MODE_PRIVATE);
+
         textureView = (TextureView) findViewById(R.id.textureView);
         guidline = (ImageView) findViewById(R.id.guidline);
         retake = (Button) findViewById(R.id.retake_btn);
         capture = (Button) findViewById(R.id.capture);
         switch_cam = (Button) findViewById(R.id.switch_camera_btn);
+        next_match_btn = (Button) findViewById(R.id.next_match_btn);
+        next_match_btn.setVisibility(View.GONE);
         retake.setVisibility(View.GONE);
 
 
@@ -76,12 +98,148 @@ public class TakePhoto extends AppCompatActivity {
                 guidline.setImageDrawable(getDrawable(R.drawable.face_guidline));
 
                 retake.setVisibility(View.GONE);
+                next_match_btn.setVisibility(View.GONE);
                 capture.setVisibility(View.VISIBLE);
                 switch_cam.setVisibility(View.VISIBLE);
 
             }
         });
+
+        next_match_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(TakePhoto.this, MatchPhotos.class);
+                startActivity(i);
+            }
+        });
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.gallery, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.choose_photo_capture){
+            Intent i = new Intent(
+                    Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+            startActivityForResult(i, RESULT_LOAD_IMAGE);
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == RESULT_LOAD_IMAGE && resultCode == RESULT_OK && null != data) {
+
+            Uri selectedImage = data.getData();
+            Bitmap bitmap = null;
+            try {
+                bitmap = getBitmapFromGalleryUri(getApplicationContext(), selectedImage);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            FileOutputStream out;
+            try {
+                out = new FileOutputStream(getExternalFilesDir(Environment.DIRECTORY_DCIM) + File.separator + "camera_photo.jpeg");
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
+                out.close();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            CameraX.unbindAll();
+
+            guidline.setImageBitmap(bitmap);
+
+            capture.setVisibility(View.GONE);
+            switch_cam.setVisibility(View.GONE);
+            retake.setVisibility(View.VISIBLE);
+            if(sharedPreferences.contains("hasPassportImage") && sharedPreferences.getBoolean("hasPassportImage", false )){
+                next_match_btn.setVisibility(View.VISIBLE);
+                sharedPreferences.edit().putBoolean("isMatched", false).apply();
+
+            }
+        }
+    }
+
+    public Bitmap getBitmapFromGalleryUri(Context mContext, Uri uri)throws IOException {
+        int orientation = 0;
+
+        InputStream input = mContext.getContentResolver().openInputStream(uri);
+        if (input != null){
+            androidx.exifinterface.media.ExifInterface exif = new androidx.exifinterface.media.ExifInterface(input);
+            orientation = exif.getAttributeInt(androidx.exifinterface.media.ExifInterface.TAG_ORIENTATION, androidx.exifinterface.media.ExifInterface.ORIENTATION_NORMAL);
+            //Log.d("Utils", "rotation value = " + orientation);
+            input.close();
+        }
+
+
+        input = mContext.getContentResolver().openInputStream(uri);
+
+        BitmapFactory.Options onlyBoundsOptions = new BitmapFactory.Options();
+        onlyBoundsOptions.inJustDecodeBounds = true;
+        onlyBoundsOptions.inDither = true;//optional
+        onlyBoundsOptions.inPreferredConfig = Bitmap.Config.ARGB_8888;//optional
+        BitmapFactory.decodeStream(input, null, onlyBoundsOptions);
+        try {
+            input.close();
+
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        }
+
+        if ((onlyBoundsOptions.outWidth == -1) || (onlyBoundsOptions.outHeight == -1)) {
+            return null;
+        }
+
+        int originalSize = (onlyBoundsOptions.outHeight > onlyBoundsOptions.outWidth) ? onlyBoundsOptions.outHeight : onlyBoundsOptions.outWidth;
+
+        //double ratio = (originalSize > maxSize) ? (originalSize / maxSize) : 1.0;
+
+        BitmapFactory.Options bitmapOptions = new BitmapFactory.Options();
+        // bitmapOptions.inSampleSize = getPowerOfTwoForSampleRatio(ratio);
+        bitmapOptions.inDither = true; //optional
+        bitmapOptions.inPreferredConfig = Bitmap.Config.ARGB_8888;//
+        input = mContext.getContentResolver().openInputStream(uri);
+        Bitmap bitmap = BitmapFactory.decodeStream(input, null, bitmapOptions);
+        try {
+            input.close();
+
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        }
+        Matrix matrix = new Matrix();
+
+        //Log.d("Utils", "rotation value = " + orientation);
+
+        int rotationInDegrees = exifToDegrees(orientation);
+        //Log.d("Utils", "rotationInDegrees value = " + rotationInDegrees);
+
+        if (orientation != 0) {
+            matrix.preRotate(rotationInDegrees);
+        }
+
+        int bmpWidth = 0;
+        try {
+            bmpWidth = bitmap.getWidth();
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        }
+        Bitmap adjustedBitmap = bitmap;
+        if (bmpWidth > 0) {
+            adjustedBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+        }
+
+        return adjustedBitmap;
+
+    }
+
 
 
     private void startCamera() {
@@ -257,11 +415,15 @@ public class TakePhoto extends AppCompatActivity {
 
             guidline.setImageBitmap(bitmap);
             textureView.setTransform(mat);
+            CameraX.unbindAll();
 
-            capture.setVisibility(View.INVISIBLE);
-            switch_cam.setVisibility(View.INVISIBLE);
+            capture.setVisibility(View.GONE);
+            switch_cam.setVisibility(View.GONE);
             retake.setVisibility(View.VISIBLE);
-
+            if(sharedPreferences.contains("hasPassportImage") && sharedPreferences.getBoolean("hasPassportImage", false )){
+                next_match_btn.setVisibility(View.VISIBLE);
+                sharedPreferences.edit().putBoolean("isMatched", false).apply();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         } catch (OutOfMemoryError oom) {

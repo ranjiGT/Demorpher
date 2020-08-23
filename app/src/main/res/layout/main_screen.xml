@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/bg"
     tools:context=".MainScreen">
 
 
@@ -11,10 +12,11 @@
         android:id="@+id/btn_nfc_scan"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
+        android:background="@drawable/button"
         android:onClick="nfcScan"
         android:text="@string/nfc_scan"
         app:layout_constraintBaseline_toBaselineOf="@+id/btn_take_photo"
+        app:layout_constraintEnd_toStartOf="@+id/btn_take_photo"
         app:layout_constraintStart_toStartOf="parent" />
 
     <Button
@@ -22,8 +24,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
+        android:background="@drawable/button"
         android:onClick="takePhoto"
         android:text="@string/take_photo"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -33,18 +35,21 @@
 
     <Button
         android:id="@+id/btn_demorph"
+        style="@style/Widget.AppCompat.Button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
+        android:background="@drawable/button"
         android:onClick="demorph"
         android:text="@string/demorph"
         app:layout_constraintBaseline_toBaselineOf="@+id/btn_take_photo"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/btn_take_photo" />
 
     <Button
         android:id="@+id/btn_match_photo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:background="@drawable/button"
         android:onClick="matchPhoto"
         android:text="@string/match"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -56,6 +61,7 @@
         android:id="@+id/btn_about_us"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:background="@drawable/button"
         android:onClick="about"
         android:text="@string/AboutUs"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -65,8 +71,8 @@
 
     <ImageView
         android:id="@+id/main_screen_image"
-        android:layout_width="273dp"
-        android:layout_height="134dp"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
         android:layout_marginTop="100dp"
         android:contentDescription="@string/image"
         app:layout_constraintEnd_toEndOf="parent"
@@ -78,6 +84,8 @@
         android:id="@+id/btn_view_photos"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:background="@drawable/button"
+        android:onClick="viewPhoto"
         android:text="@string/view_photos"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/btn_about_us"

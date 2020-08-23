@@ -1,5 +1,7 @@
 package com.ss2020.project.demorpher;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
@@ -7,6 +9,7 @@ import android.graphics.Rect;
 import android.media.ExifInterface;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.ContactsContract;
 import android.util.Rational;
 import android.util.Size;
 import android.view.Surface;
@@ -49,6 +52,8 @@ public class MatchPhotos extends AppCompatActivity {
     private Button testBtn;
     private ImageView tempCamera;
     private ImageView tempPassport;
+    private ImageView faceCamera;
+    private ImageView facePass;
     private TextView result;
 //    private TextureView temp_textureview;
     private TextView threshold;
@@ -60,6 +65,9 @@ public class MatchPhotos extends AppCompatActivity {
     public static Bitmap bitmap2;
     private Bitmap bitmapCrop1;
     private Bitmap bitmapCrop2;
+    SharedPreferences sharedPreferences;
+    public Button next_demorph;
+
 
 
 
@@ -71,6 +79,8 @@ public class MatchPhotos extends AppCompatActivity {
         setContentView(R.layout.activity_match);
 
 
+        sharedPreferences = getSharedPreferences("enableDisable", MODE_PRIVATE);
+
         //connecting components
 //        addBtn = (Button) findViewById(R.id.button_temp_add_train_image);
         matchBtn = (Button) findViewById(R.id.button_temp_match);
@@ -80,16 +90,29 @@ public class MatchPhotos extends AppCompatActivity {
 //        temp_textureview = (TextureView) findViewById(R.id.temp_textureView);
         testBtn = (Button) findViewById(R.id.temp_test_button);
         threshold = (TextView) findViewById(R.id.threshold_text);
+        faceCamera = (ImageView) findViewById(R.id.detected_face_cam);
+        facePass = (ImageView) findViewById(R.id.detected_face_pass);
+        facePass.setVisibility(View.INVISIBLE);
+        faceCamera.setVisibility(View.INVISIBLE);
 
 
-        String thr = " Threshold : " + MobileFaceNet.THRESHOLD;
+        next_demorph = (Button) findViewById(R.id.next_demorph_button);
+        next_demorph.setVisibility(View.GONE);
+
+        String thr = " Threshold : " + MobileFaceNet.THRESHOLD + " %";
         threshold.setText(thr);
 
 
         bitmap1 = BitmapFactory.decodeFile(getExternalFilesDir(Environment.DIRECTORY_DCIM) + File.separator + "passport_photo.jpeg");
         bitmap2 = BitmapFactory.decodeFile(getExternalFilesDir(Environment.DIRECTORY_DCIM) + File.separator + "camera_photo.jpeg");
 
-
+        next_demorph.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MatchPhotos.this, DemorphPhotos.class);
+                startActivity(intent);
+            }
+        });
         //Setting up Images
         setImage();
 
@@ -274,6 +297,15 @@ public class MatchPhotos extends AppCompatActivity {
 
     //end temporary methods for testing purpose taken from takephotos.java
 
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Intent i = new Intent(MatchPhotos.this, MainScreen.class);
+        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(i);
+    }
+
     private void setImage(){
         Bitmap image = BitmapFactory.decodeFile(getExternalFilesDir(Environment.DIRECTORY_DCIM) + File.separator + "camera_photo.jpeg");
         Bitmap image2 = BitmapFactory.decodeFile(getExternalFilesDir(Environment.DIRECTORY_DCIM) + File.separator + "passport_photo.jpeg");
@@ -303,12 +335,13 @@ public class MatchPhotos extends AppCompatActivity {
 
         // Face data detected
         Vector<Box> boxes1 = mtcnn.detectFaces(bitmapTemp1, bitmapTemp1.getWidth() / 5); //Only this code detects the face, the following is based on Box to cut out the face in the picture
-        result.setText("Face Detected Successfully");
         Vector<Box> boxes2 = mtcnn.detectFaces(bitmapTemp2, bitmapTemp2.getWidth() / 5); //Only this code detects the face, the following is based on Box to cut out the face in the picture
         if (boxes1.size() == 0 || boxes2.size() == 0) {
             Toast.makeText(getApplicationContext(), "No face detected", Toast.LENGTH_LONG).show();
             return;
-        }
+        }else
+            Toast.makeText(getApplicationContext(), "Face Detected Successfully", Toast.LENGTH_SHORT).show();
+
 
         // Because there is only one face in each photo used here, the first value is used to crop the face
         Box box1 = boxes1.get(0);
@@ -324,9 +357,35 @@ public class MatchPhotos extends AppCompatActivity {
         bitmapCrop1 = FaceMatchUtil.crop(bitmapTemp1, rect1);
         bitmapCrop2 = FaceMatchUtil.crop(bitmapTemp2, rect2);
 
+        Bitmap scBitmap1 = Bitmap.createScaledBitmap(bitmapCrop1, 256, 256, true);
+        Bitmap scBitmap2 = Bitmap.createScaledBitmap(bitmapCrop2, 256, 256, true);
 
-        tempCamera.setImageBitmap(bitmapCrop2);
-        tempPassport.setImageBitmap(bitmapCrop1);
+
+        File passFile = new File(getExternalFilesDir(Environment.DIRECTORY_DCIM) + File.separator + "passport_face.jpeg");
+        try {
+            FileOutputStream out = new FileOutputStream(passFile);
+            scBitmap2.compress(Bitmap.CompressFormat.JPEG, 100, out);
+            out.flush();
+            out.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        File liveFile = new File(getExternalFilesDir(Environment.DIRECTORY_DCIM) + File.separator + "camera_face.jpeg");
+        try {
+            FileOutputStream out = new FileOutputStream(liveFile);
+            scBitmap1.compress(Bitmap.CompressFormat.JPEG, 100, out);
+            out.flush();
+            out.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+        faceCamera.setVisibility(View.VISIBLE);
+        facePass.setVisibility(View.VISIBLE);
+        faceCamera.setImageBitmap(bitmapCrop2);
+        facePass.setImageBitmap(bitmapCrop1);
     }
 
 
@@ -339,20 +398,28 @@ public class MatchPhotos extends AppCompatActivity {
             return;
         }
 
-        float same = mobileFaceNet.compare(bitmapCrop1, bitmapCrop2); //Just this useful code, everything else is UI
+        float same = mobileFaceNet.compare(bitmapCrop1, bitmapCrop2) * 100 ; //Just this useful code, everything else is UI
 
-        String text = "Similarity :" + same;
+
+
+        String text = String.valueOf(same) + " %";
         if (same > MobileFaceNet.THRESHOLD) {
-            text = text + "，" + "True";
+//            text = text + "，" + "True";
+
             result.setTextColor(getResources().getColor(android.R.color.holo_green_light));
+            sharedPreferences.edit().putBoolean("isMatched", true).apply();
+            next_demorph.setVisibility(View.VISIBLE);
         } else {
-            text = text + "，" + "False";
+//            text = text + "，" + "False";
+            sharedPreferences.edit().putBoolean("isMatched", false).apply();
             result.setTextColor(getResources().getColor(android.R.color.holo_red_light));
         }
 
 
 //        text = text + " Threshold :" + MobileFaceNet.THRESHOLD;
-        result.setText(text);
+        result.setText(text.substring(0,5));
     }
+
+
 
 }

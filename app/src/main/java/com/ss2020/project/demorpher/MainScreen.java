@@ -1,7 +1,9 @@
 package com.ss2020.project.demorpher;
 
+import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -24,8 +26,14 @@ public class MainScreen extends AppCompatActivity {
     private static final int CAMERA_PERMISSION_CODE = 111;
     private static final int CAMERA_REQUEST_CODE = 999;
 
+    SharedPreferences sharedPreferences;
+
     Button take_photo;
     Button viewPhotos;
+    Button nfc_scan;
+    Button demorph;
+    Button match_photos;
+    Button about_us;
     ImageView main_screen_image;
 
     public static boolean hasPermissions(Context context, String... permissions) {
@@ -45,25 +53,64 @@ public class MainScreen extends AppCompatActivity {
         setContentView(R.layout.main_screen);
 
 
+        sharedPreferences = getSharedPreferences("enableDisable", MODE_PRIVATE);
+
+        Bitmap cam_image = BitmapFactory.decodeFile(getExternalFilesDir(Environment.DIRECTORY_DCIM) + File.separator + "camera_photo.jpeg");
+        Bitmap pass_image = BitmapFactory.decodeFile(getExternalFilesDir(Environment.DIRECTORY_DCIM) + File.separator + "passport_photo.jpeg");
+
+
+
+
         //connecting the components
         take_photo = (Button) findViewById(R.id.btn_take_photo);
         viewPhotos = (Button) findViewById(R.id.btn_view_photos);
         main_screen_image = (ImageView) findViewById(R.id.main_screen_image);
+        nfc_scan = (Button) findViewById(R.id.btn_nfc_scan);
+        demorph = (Button) findViewById(R.id.btn_demorph);
+        match_photos = (Button) findViewById(R.id.btn_match_photo);
+        about_us = (Button) findViewById(R.id.btn_about_us);
+
+
+        viewPhotos.setClickable(false);
+
+
+
+        if(cam_image != null && pass_image != null){
+            viewPhotos.setClickable(true);
+            viewPhotos.setBackground(getDrawable(R.drawable.button));
+            sharedPreferences.edit().putBoolean("hasBothImages", true).apply();
+        }else {
+            viewPhotos.setClickable(false);
+            viewPhotos.setBackground(getDrawable(R.drawable.button_disabled));
+            sharedPreferences.edit().putBoolean("hasBothImages", false).apply();
+        }
+
+        if(pass_image != null){
+            sharedPreferences.edit().putBoolean("hasPassportImage", true).apply();
+        }else
+            sharedPreferences.edit().putBoolean("hasPassportImage", false).apply();
+
 
 
         Bitmap main_image = BitmapFactory.decodeFile(getExternalFilesDir(Environment.DIRECTORY_DCIM) + File.separator + "passport_photo.jpeg");
         if(main_image != null)
             main_screen_image.setImageBitmap(main_image);
+        match_photos.setClickable(false);
+        match_photos.setBackground(getDrawable(R.drawable.button_disabled));
+        demorph.setBackground(getDrawable(R.drawable.button_disabled));
+        demorph.setClickable(false);
+        if(sharedPreferences.getBoolean("hasBothImages", false)){
+            match_photos.setBackground(getDrawable(R.drawable.button));
+            match_photos.setClickable(true);
+        }
+        if(sharedPreferences.contains("isMatched") && sharedPreferences.getBoolean("isMatched", false)){
+            demorph.setBackground(getDrawable(R.drawable.button));
+            demorph.setClickable(true);
+        }
 
 
 
-        viewPhotos.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(MainScreen.this, ViewPhotos.class);
-                startActivity(i);
-            }
-        });
+
 
 
         //takes the image from user
@@ -103,6 +150,11 @@ public class MainScreen extends AppCompatActivity {
 
     }
 
+    public void viewPhoto(View view){
+        Intent i = new Intent(MainScreen.this, ViewPhotos.class);
+        startActivity(i);
+    }
+
     public void nfcScan(View view) {
         Intent intent = new Intent(this, NfcScan.class);
         startActivity(intent);
@@ -122,4 +174,6 @@ public class MainScreen extends AppCompatActivity {
         Intent intent = new Intent(this, AboutUs.class);
         startActivity(intent);
     }
+
+
 }

@@ -5,8 +5,8 @@
     <string name="nfc_scan">NFC Scan</string>
     <string name="match">Match</string>
     <string name="demorph">Demorph</string>
-    <string name="view_photos">View Photos</string>
-    <string name="take_photo">Take Photo</string>
+    <string name="view_photos">View</string>
+    <string name="take_photo">Capture</string>
     <string name="todo">TODO</string>
     <string name="image">Image</string>
     <string name="compareLiveFace">Compare live face</string>
@@ -26,4 +26,7 @@
     <string name="gender">Gender</string>
     <string name="date_of_birth">Date of birth</string>
     <string name="failed_to_register_face">Failed to register face</string>
+    <string name="view">View</string>
+    <string name="capture">Capture</string>
+    <string name="nfc">NFC</string>
 </resources>

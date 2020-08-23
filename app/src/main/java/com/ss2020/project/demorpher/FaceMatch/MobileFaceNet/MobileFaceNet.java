@@ -16,7 +16,7 @@ public class MobileFaceNet {
     private static final String MODEL_FILE = "MobileFaceNet.tflite";
 
     public static final int INPUT_IMAGE_SIZE = 112; // The width and height of the placeholder image that needs feed data
-    public static final float THRESHOLD = 0.85f; // Set a threshold, greater than this value is considered the same person
+    public static final float THRESHOLD = 85.00f; // Set a threshold, greater than this value is considered the same person
 
     private Interpreter interpreter;
 

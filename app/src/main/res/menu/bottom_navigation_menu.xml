@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/bottom_nfc_scan"
+        android:enabled="true"
+        android:title="@string/nfc"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/bottom_take_photo"
+        android:enabled="true"
+        android:title="@string/capture"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/bottom_match"
+        android:enabled="true"
+        android:title="@string/match"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/bottom_demorph"
+        android:enabled="true"
+        android:title="@string/demorph"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/bottom_view_photos"
+        android:enabled="true"
+        android:title="@string/view"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/bottom_about_us"
+        android:enabled="true"
+        android:title="@string/AboutUs"
+        app:showAsAction="ifRoom" />
+</menu>

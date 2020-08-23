@@ -6,22 +6,29 @@
     <uses-permission android:name="android.permission.NFC" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <uses-feature android:name="android.hardware.screen.landscape" />
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.camera.autofocus" />
 
-
     <application
         android:allowBackup="true"
         android:fullBackupContent="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@drawable/app_icon"
         android:label="@string/app_name"
         android:requestLegacyExternalStorage="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".Splashscreen">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <!-- AboutUs -->
         <activity
             android:name=".AboutUs"
@@ -31,9 +38,7 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainScreen" />
-        </activity>
-
-        <!-- Match Activity -->
+        </activity> <!-- Match Activity -->
         <activity
             android:name=".MatchPhotos"
             android:parentActivityName=".MainScreen">
@@ -42,9 +47,7 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainScreen" />
-        </activity>
-
-        <!-- Demorph Activity -->
+        </activity> <!-- Demorph Activity -->
         <activity
             android:name=".DemorphPhotos"
             android:parentActivityName=".MainScreen">
@@ -53,9 +56,7 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainScreen" />
-        </activity>
-
-        <!-- Take Photo Activity -->
+        </activity> <!-- Take Photo Activity -->
         <activity
             android:name=".TakePhoto"
             android:parentActivityName=".MainScreen">
@@ -64,9 +65,7 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainScreen" />
-        </activity>
-
-        <!-- View Photo Activity -->
+        </activity> <!-- View Photo Activity -->
         <activity
             android:name=".ViewPhotos"
             android:parentActivityName=".MainScreen">
@@ -75,9 +74,7 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainScreen" />
-        </activity>
-
-        <!-- NFC Activity -->
+        </activity> <!-- NFC Activity -->
         <activity
             android:name=".NfcScan"
             android:parentActivityName=".MainScreen">
@@ -88,16 +85,11 @@
                 android:value=".MainScreen" />
         </activity> <!-- Main Activity -->
         <activity android:name=".MainScreen">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity
             android:name=".ScanResultActivity"
             android:parentActivityName=".NfcScan" />
-
     </application>
 
 </manifest>
