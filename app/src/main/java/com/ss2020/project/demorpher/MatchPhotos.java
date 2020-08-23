@@ -1,6 +1,7 @@
 package com.ss2020.project.demorpher;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
@@ -64,7 +65,7 @@ public class MatchPhotos extends AppCompatActivity {
     public static Bitmap bitmap2;
     private Bitmap bitmapCrop1;
     private Bitmap bitmapCrop2;
-
+    SharedPreferences sharedPreferences;
     public Button next_demorph;
 
 
@@ -77,6 +78,8 @@ public class MatchPhotos extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_match);
 
+
+        sharedPreferences = getSharedPreferences("enableDisable", MODE_PRIVATE);
 
         //connecting components
 //        addBtn = (Button) findViewById(R.id.button_temp_add_train_image);
@@ -294,6 +297,15 @@ public class MatchPhotos extends AppCompatActivity {
 
     //end temporary methods for testing purpose taken from takephotos.java
 
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Intent i = new Intent(MatchPhotos.this, MainScreen.class);
+        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(i);
+    }
+
     private void setImage(){
         Bitmap image = BitmapFactory.decodeFile(getExternalFilesDir(Environment.DIRECTORY_DCIM) + File.separator + "camera_photo.jpeg");
         Bitmap image2 = BitmapFactory.decodeFile(getExternalFilesDir(Environment.DIRECTORY_DCIM) + File.separator + "passport_photo.jpeg");
@@ -395,9 +407,11 @@ public class MatchPhotos extends AppCompatActivity {
 //            text = text + "，" + "True";
 
             result.setTextColor(getResources().getColor(android.R.color.holo_green_light));
+            sharedPreferences.edit().putBoolean("isMatched", true).apply();
             next_demorph.setVisibility(View.VISIBLE);
         } else {
 //            text = text + "，" + "False";
+            sharedPreferences.edit().putBoolean("isMatched", false).apply();
             result.setTextColor(getResources().getColor(android.R.color.holo_red_light));
         }
 
@@ -405,5 +419,7 @@ public class MatchPhotos extends AppCompatActivity {
 //        text = text + " Threshold :" + MobileFaceNet.THRESHOLD;
         result.setText(text.substring(0,5));
     }
+
+
 
 }

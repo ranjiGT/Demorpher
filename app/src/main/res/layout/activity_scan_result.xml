@@ -311,8 +311,10 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:layout_marginBottom="10dp"
-                android:background="@drawable/button"
-                android:text="Take Live Image" />
+                android:background="@drawable/button_next"
+                android:text="Take Live Image"
+                android:textColor="#FFFFFF"
+                android:textStyle="bold" />
         </TableRow>
     </TableLayout>
 </ScrollView>

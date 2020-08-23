@@ -1,6 +1,7 @@
 package com.ss2020.project.demorpher;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -32,6 +33,7 @@ public class ScanResultActivity extends AppCompatActivity {
     DetectedFace mrtdFace;
     MRTDScanResult scanResult;
     Button next_capture;
+    SharedPreferences sharedPreferences;
 
     private static class StorageKeys {
         public static final String MRTD_FACE = "mrtdFace";
@@ -43,6 +45,8 @@ public class ScanResultActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         Intent intent = getIntent();
 
+
+        sharedPreferences = getSharedPreferences("enableDisable", MODE_PRIVATE);
         next_capture = (Button) findViewById(R.id.next_capture_btn);
         if (savedInstanceState != null) {
             mrtdFace = savedInstanceState.getParcelable(StorageKeys.MRTD_FACE);
@@ -121,9 +125,19 @@ public class ScanResultActivity extends AppCompatActivity {
                 out.close();
                 String msg = "Saved at " + file.getAbsolutePath();
                 Toast.makeText(getBaseContext(), msg, Toast.LENGTH_SHORT).show();
+
+                if(faceBitmap != null){
+                    sharedPreferences.edit().putBoolean("hasPassportImage", true).apply();
+                }else
+                    sharedPreferences.edit().putBoolean("hasPassportImage", false).apply();
+                sharedPreferences.edit().putBoolean("isMatched", false).apply();
+
+
             } catch (Exception e) {
                 e.printStackTrace();
             }
+
+
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -141,6 +155,23 @@ public class ScanResultActivity extends AppCompatActivity {
         ((TextView)findViewById(R.id.nationality)).setText(scanResult.getNationality());
         ((TextView)findViewById(R.id.gender)).setText(scanResult.getGender());
         ((TextView)findViewById(R.id.dateOfBirth)).setText(scanResult.getDateOfBirth());
+        ((Button)findViewById(R.id.next_match_btn)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int PERMISSION_ALL = 1;
+                String[] PERMISSIONS = {
+                        android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                        android.Manifest.permission.CAMERA
+                };
+
+                if (!hasPermissions(ScanResultActivity.this, PERMISSIONS)) {
+                    ActivityCompat.requestPermissions(ScanResultActivity.this, PERMISSIONS, PERMISSION_ALL);
+                } else {
+                    Intent i = new Intent(ScanResultActivity.this, TakePhoto.class);
+                    startActivity(i);
+                }
+            }
+        });
         if (faceBitmap != null) {
             ((ImageView)findViewById(R.id.imageView)).setImageBitmap(faceBitmap);
         } else {

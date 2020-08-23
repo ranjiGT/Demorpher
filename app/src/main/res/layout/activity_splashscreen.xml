@@ -10,8 +10,8 @@
 
     <ImageView
         android:id="@+id/splash_logo"
-        android:layout_width="130dp"
-        android:layout_height="130dp"
+        android:layout_width="170dp"
+        android:layout_height="100dp"
         android:contentDescription="@string/todo"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

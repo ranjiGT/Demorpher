@@ -131,8 +131,10 @@
         android:layout_width="wrap_content"
         android:layout_height="45dp"
         android:layout_marginBottom="30dp"
-        android:background="@drawable/button"
+        android:background="@drawable/button_next"
         android:text="Demorph"
+        android:textColor="#FFFFFF"
+        android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/button_layout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

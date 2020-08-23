@@ -42,20 +42,29 @@
             android:id="@+id/capture"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
             android:layout_marginEnd="40dp"
+            android:layout_marginBottom="5dp"
+            android:background="@drawable/button"
             android:text="Capture" />
 
         <Button
             android:id="@+id/switch_camera_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:background="@drawable/button"
             android:text="Switch" />
 
         <Button
             android:id="@+id/retake_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
             android:layout_marginEnd="40dp"
+            android:layout_marginBottom="5dp"
+            android:background="@drawable/button"
             android:text="Retake"
             android:visibility="visible" />
 
@@ -63,7 +72,12 @@
             android:id="@+id/next_match_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Match" />
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:background="@drawable/button_next"
+            android:text="Match"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
