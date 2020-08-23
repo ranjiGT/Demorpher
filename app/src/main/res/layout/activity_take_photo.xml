@@ -6,22 +6,12 @@
     android:layout_height="match_parent"
     tools:context=".TakePhoto">
 
-    <Button
-        android:id="@+id/capture"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:text="Capture"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/switch_camera_btn"
-        app:layout_constraintStart_toStartOf="parent" />
-
     <TextureView
         android:id="@+id/textureView"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginBottom="32dp"
-        app:layout_constraintBottom_toTopOf="@+id/switch_camera_btn"
+        android:layout_marginBottom="100dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -38,25 +28,42 @@
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/face_guidline" />
 
-    <Button
-        android:id="@+id/switch_camera_btn"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:text="Switch"
+        android:gravity="center"
+        android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/capture" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textureView">
 
-    <Button
-        android:id="@+id/retake_btn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:text="Retake"
-        android:visibility="visible"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        <Button
+            android:id="@+id/capture"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="40dp"
+            android:text="Capture" />
+
+        <Button
+            android:id="@+id/switch_camera_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Switch" />
+
+        <Button
+            android:id="@+id/retake_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="40dp"
+            android:text="Retake"
+            android:visibility="visible" />
+
+        <Button
+            android:id="@+id/next_match_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Match" />
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,5 +1,6 @@
 package com.ss2020.project.demorpher;
 
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -45,6 +46,7 @@ public class TakePhoto extends AppCompatActivity {
     Button retake;
     Button capture;
     Button switch_cam;
+    Button next_match_btn;
     Boolean flipRequired = false;
     public  CameraX.LensFacing lensFacing = CameraX.LensFacing.BACK;
 
@@ -58,6 +60,8 @@ public class TakePhoto extends AppCompatActivity {
         retake = (Button) findViewById(R.id.retake_btn);
         capture = (Button) findViewById(R.id.capture);
         switch_cam = (Button) findViewById(R.id.switch_camera_btn);
+        next_match_btn = (Button) findViewById(R.id.next_match_btn);
+        next_match_btn.setVisibility(View.GONE);
         retake.setVisibility(View.GONE);
 
 
@@ -76,9 +80,18 @@ public class TakePhoto extends AppCompatActivity {
                 guidline.setImageDrawable(getDrawable(R.drawable.face_guidline));
 
                 retake.setVisibility(View.GONE);
+                next_match_btn.setVisibility(View.GONE);
                 capture.setVisibility(View.VISIBLE);
                 switch_cam.setVisibility(View.VISIBLE);
 
+            }
+        });
+
+        next_match_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(TakePhoto.this, MatchPhotos.class);
+                startActivity(i);
             }
         });
     }
@@ -258,9 +271,10 @@ public class TakePhoto extends AppCompatActivity {
             guidline.setImageBitmap(bitmap);
             textureView.setTransform(mat);
 
-            capture.setVisibility(View.INVISIBLE);
-            switch_cam.setVisibility(View.INVISIBLE);
+            capture.setVisibility(View.GONE);
+            switch_cam.setVisibility(View.GONE);
             retake.setVisibility(View.VISIBLE);
+            next_match_btn.setVisibility(View.VISIBLE);
 
         } catch (IOException e) {
             e.printStackTrace();

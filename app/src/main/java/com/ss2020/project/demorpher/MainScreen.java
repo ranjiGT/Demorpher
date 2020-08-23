@@ -122,4 +122,6 @@ public class MainScreen extends AppCompatActivity {
         Intent intent = new Intent(this, AboutUs.class);
         startActivity(intent);
     }
+
+
 }

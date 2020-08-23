@@ -17,6 +17,7 @@ android {
 
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
     }
 
     buildTypes {
@@ -41,6 +42,9 @@ android {
 
 }
 
+android {
+    useLibrary 'org.apache.http.legacy'
+}
 repositories {
     maven {
         url 'https://maven.google.com/'
@@ -77,4 +81,15 @@ dependencies {
     implementation 'com.appliedrec.verid:rx:1.10.0'
     implementation 'com.appliedrec.verid:ui-elements:1.0.0'
     implementation 'com.appliedrec.verid:ui:1.16.0'
+
+
+    //network
+    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
+    implementation 'com.squareup.okhttp3:okhttp:3.14.9'
+    implementation 'com.squareup.okhttp3:logging-interceptor:3.4.1'
+
+//    //volley
+//    implementation 'com.android.volley:volley:1.1.0'
+
 }

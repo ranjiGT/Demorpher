@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/bg"
     tools:context=".ScanResultActivity">
 
     <TableLayout
@@ -25,8 +26,8 @@
         <TableRow>
 
             <TextView
-                android:layout_height="wrap_content"
                 android:layout_width="0dp"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:paddingStart="@dimen/table_cell_horizontal_padding"
                 android:paddingTop="@dimen/table_cell_vertical_padding"
@@ -53,8 +54,8 @@
         <TableRow>
 
             <TextView
-                android:layout_height="wrap_content"
                 android:layout_width="0dp"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:paddingStart="@dimen/table_cell_horizontal_padding"
                 android:paddingTop="@dimen/table_cell_vertical_padding"
@@ -64,8 +65,8 @@
 
             <TextView
                 android:id="@+id/personalNumber"
-                android:layout_height="wrap_content"
                 android:layout_width="0dp"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="right"
                 android:paddingTop="@dimen/table_cell_vertical_padding"
@@ -81,8 +82,8 @@
         <TableRow>
 
             <TextView
-                android:layout_height="wrap_content"
                 android:layout_width="0dp"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:paddingStart="@dimen/table_cell_horizontal_padding"
                 android:paddingTop="@dimen/table_cell_vertical_padding"
@@ -92,8 +93,8 @@
 
             <TextView
                 android:id="@+id/documentCode"
-                android:layout_height="wrap_content"
                 android:layout_width="0dp"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="right"
                 android:paddingTop="@dimen/table_cell_vertical_padding"
@@ -109,8 +110,8 @@
         <TableRow>
 
             <TextView
-                android:layout_height="wrap_content"
                 android:layout_width="0dp"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:paddingStart="@dimen/table_cell_horizontal_padding"
                 android:paddingTop="@dimen/table_cell_vertical_padding"
@@ -120,8 +121,8 @@
 
             <TextView
                 android:id="@+id/issuingState"
-                android:layout_height="wrap_content"
                 android:layout_width="0dp"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="right"
                 android:paddingTop="@dimen/table_cell_vertical_padding"
@@ -137,8 +138,8 @@
         <TableRow>
 
             <TextView
-                android:layout_height="wrap_content"
                 android:layout_width="0dp"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:paddingStart="@dimen/table_cell_horizontal_padding"
                 android:paddingTop="@dimen/table_cell_vertical_padding"
@@ -148,8 +149,8 @@
 
             <TextView
                 android:id="@+id/dateOfExpiry"
-                android:layout_height="wrap_content"
                 android:layout_width="0dp"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="right"
                 android:paddingTop="@dimen/table_cell_vertical_padding"
@@ -165,8 +166,8 @@
         <TableRow>
 
             <TextView
-                android:layout_height="wrap_content"
                 android:layout_width="0dp"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:paddingStart="@dimen/table_cell_horizontal_padding"
                 android:paddingTop="@dimen/table_cell_vertical_padding"
@@ -176,8 +177,8 @@
 
             <TextView
                 android:id="@+id/primaryIdentifier"
-                android:layout_height="wrap_content"
                 android:layout_width="0dp"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="right"
                 android:paddingTop="@dimen/table_cell_vertical_padding"
@@ -193,8 +194,8 @@
         <TableRow>
 
             <TextView
-                android:layout_height="wrap_content"
                 android:layout_width="0dp"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:paddingStart="@dimen/table_cell_horizontal_padding"
                 android:paddingTop="@dimen/table_cell_vertical_padding"
@@ -204,8 +205,8 @@
 
             <TextView
                 android:id="@+id/secondaryIdentifiers"
-                android:layout_height="wrap_content"
                 android:layout_width="0dp"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="end"
                 android:paddingTop="@dimen/table_cell_vertical_padding"
@@ -221,8 +222,8 @@
         <TableRow>
 
             <TextView
-                android:layout_height="wrap_content"
                 android:layout_width="0dp"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:paddingStart="@dimen/table_cell_horizontal_padding"
                 android:paddingTop="@dimen/table_cell_vertical_padding"
@@ -232,8 +233,8 @@
 
             <TextView
                 android:id="@+id/nationality"
-                android:layout_height="wrap_content"
                 android:layout_width="0dp"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="right"
                 android:paddingTop="@dimen/table_cell_vertical_padding"
@@ -250,8 +251,8 @@
         <TableRow>
 
             <TextView
-                android:layout_height="wrap_content"
                 android:layout_width="0dp"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:paddingStart="@dimen/table_cell_horizontal_padding"
                 android:paddingTop="@dimen/table_cell_vertical_padding"
@@ -261,8 +262,8 @@
 
             <TextView
                 android:id="@+id/gender"
-                android:layout_height="wrap_content"
                 android:layout_width="0dp"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="end"
                 android:paddingTop="@dimen/table_cell_vertical_padding"
@@ -278,8 +279,8 @@
         <TableRow>
 
             <TextView
-                android:layout_height="wrap_content"
                 android:layout_width="0dp"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:paddingStart="@dimen/table_cell_horizontal_padding"
                 android:paddingTop="@dimen/table_cell_vertical_padding"
@@ -289,14 +290,29 @@
 
             <TextView
                 android:id="@+id/dateOfBirth"
-                android:layout_height="wrap_content"
                 android:layout_width="0dp"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="right"
                 android:paddingTop="@dimen/table_cell_vertical_padding"
                 android:paddingEnd="@dimen/table_cell_horizontal_padding"
                 android:paddingBottom="@dimen/table_cell_vertical_padding"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center">
+
+            <Button
+                android:id="@+id/next_capture_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:background="@drawable/button"
+                android:text="Take Live Image" />
         </TableRow>
     </TableLayout>
 </ScrollView>
