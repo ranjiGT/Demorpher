@@ -29,4 +29,5 @@
     <string name="view">View</string>
     <string name="capture">Capture</string>
     <string name="nfc">NFC</string>
+    <string name="copy_right">Copyrights © %1$d</string>
 </resources>
