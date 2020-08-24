@@ -5,13 +5,20 @@ Summer Semester 2020 Project
 
 
 # 1 Motivation and Problem Statement
-Face Morphing attacks are a threat to current travel document security. We must Design, Implement and test an Android App countering FMA with a de-morphing approach.
+
+The  application  follows  a  generic  workflow  as  describedbelow.For  developing  the  Android  application  to  detect  potentiallymorphed  passport  images,  we  started  by  portraying  a  layoutfor the application followed by implementing the features one by one. 
+
+The steps are as follows:
+- Read the travel document data (image in our case) usingNFC
+- Capture a live image with device camera
+- Perform a face match
+- If necessary perform De-morphing process
+- Visualization and Evaluation of Results
 
 # 2 Tool set
 For Reading face images from a document using NFC we are going to use jmrtd (https://jmrtd.org/)
-For taking a live-image with the camera we are thinking of using a fixed ratio with guidelines to make sure every face is in the same position
-For matching we have not found a workaround on how to implement dlib in an android aplication so perhaps some help from the supervisor is required.
-De-morphing – need some help aswell for a toolset to help us in developing the app
+For taking a live-image with the camera we used CameraX module using a fixed ratio with guidelines to make sure every face is in the same position
+For matching we are using MobileFaceNet architecture with help of tensorflow lite and MTCNN for detection and place landmark on the face.
 Visualization and evaluation: We are thinking that these should not be part of the app but rather our finidings and measurements that we did in our app. These should be included in the final report.
 
 # 3 Concept
