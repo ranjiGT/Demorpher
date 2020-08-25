@@ -1,45 +1,29 @@
 package com.ss2020.project.demorpher;
 
+
+
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Matrix;
 import android.graphics.Rect;
-import android.media.ExifInterface;
 import android.os.Bundle;
 import android.os.Environment;
-import android.provider.ContactsContract;
-import android.util.Rational;
-import android.util.Size;
-import android.view.Surface;
-import android.view.TextureView;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.camera.core.CameraX;
-import androidx.camera.core.ImageCapture;
-import androidx.camera.core.ImageCaptureConfig;
-import androidx.camera.core.Preview;
-import androidx.camera.core.PreviewConfig;
-import androidx.lifecycle.LifecycleOwner;
+import androidx.cardview.widget.CardView;
 
 import com.ss2020.project.demorpher.FaceMatch.FaceMatchUtil;
 import com.ss2020.project.demorpher.FaceMatch.MobileFaceNet.MobileFaceNet;
 import com.ss2020.project.demorpher.FaceMatch.mtcnn.Box;
 import com.ss2020.project.demorpher.FaceMatch.mtcnn.MTCNN;
-import com.ss2020.project.demorpher.FaceMatch.mtcnn.Utils;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Vector;
@@ -55,6 +39,8 @@ public class MatchPhotos extends AppCompatActivity {
     private ImageView faceCamera;
     private ImageView facePass;
     private TextView result;
+    private CardView detect_pass;
+    private CardView detect_cam;
 //    private TextureView temp_textureview;
     private TextView threshold;
 
@@ -88,6 +74,14 @@ public class MatchPhotos extends AppCompatActivity {
         tempPassport = (ImageView) findViewById(R.id.image_temp_for_training);
         result = (TextView) findViewById(R.id.temp_text_result);
 //        temp_textureview = (TextureView) findViewById(R.id.temp_textureView);
+
+        detect_cam = (CardView) findViewById(R.id.cam_card_match);
+        detect_pass = (CardView) findViewById(R.id.pass_card_match);
+
+        detect_pass.setVisibility(View.INVISIBLE);
+        detect_cam.setVisibility(View.INVISIBLE);
+
+
         testBtn = (Button) findViewById(R.id.temp_test_button);
         threshold = (TextView) findViewById(R.id.threshold_text);
         faceCamera = (ImageView) findViewById(R.id.detected_face_cam);
@@ -125,14 +119,6 @@ public class MatchPhotos extends AppCompatActivity {
         }
 
 
-        // to take test photo
-//        addBtn.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                startCamera();
-//            }
-//        });
-
 
         // start face matching
 
@@ -153,150 +139,6 @@ public class MatchPhotos extends AppCompatActivity {
     }
 
 
-    //start temporary methods for testing purpose taken from takephotos.java
-
-//    private void startCamera() {
-//
-//        CameraX.unbindAll();
-//
-//        Rational aspectRatio = new Rational(temp_textureview.getWidth(), temp_textureview.getHeight());
-//        Size screen = new Size(temp_textureview.getWidth(), temp_textureview.getHeight()); //size of the screen
-//
-//        // setting resolution and aspect ratio
-//        PreviewConfig pConfig = new PreviewConfig.Builder().setTargetAspectRatio(aspectRatio).setTargetResolution(screen).build();
-//        Preview preview = new Preview(pConfig);
-//
-//        preview.setOnPreviewOutputUpdateListener(new Preview.OnPreviewOutputUpdateListener() {
-//
-//            @Override
-//            public void onUpdated(Preview.PreviewOutput output) {
-//                ViewGroup parent = (ViewGroup) temp_textureview.getParent();
-//                parent.removeView(temp_textureview);
-//                parent.addView(temp_textureview, 0);
-//
-//                temp_textureview.setSurfaceTexture(output.getSurfaceTexture());
-//                updateTransform();
-//            }
-//        });
-//
-//
-//        ImageCaptureConfig imageCaptureConfig = new ImageCaptureConfig.Builder().setCaptureMode(ImageCapture.CaptureMode.MAX_QUALITY) // to get maximum quality
-//                .setTargetRotation(Surface.ROTATION_0).build();
-//        final ImageCapture imgCap = new ImageCapture(imageCaptureConfig);
-//
-//        // to add button for capturing image
-//        findViewById(R.id.click).setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                File file = new File(getExternalFilesDir(Environment.DIRECTORY_DCIM) + File.separator + "train_photo.jpeg");
-//                imgCap.takePicture(file, new ImageCapture.OnImageSavedListener() {
-//
-//                    @Override
-//                    public void onImageSaved(@NonNull File file) {
-//                        String msg = "Captured at " + file.getAbsolutePath();
-//                        Toast.makeText(getBaseContext(), msg, Toast.LENGTH_LONG).show();
-//
-//                        rotateImage(file);
-//
-//                    }
-//
-//                    @Override
-//                    public void onError(@NonNull ImageCapture.UseCaseError useCaseError, @NonNull String message, @Nullable Throwable cause) {
-//                        String msg = "Capture failed : " + message;
-//                        Toast.makeText(getBaseContext(), msg, Toast.LENGTH_LONG).show();
-//                        if (cause != null) {
-//                            cause.printStackTrace();
-//                        }
-//                    }
-//                });
-//            }
-//        });
-//
-//        //bind to lifecycle:
-//        CameraX.bindToLifecycle((LifecycleOwner) this, preview, imgCap);
-//    }
-
-
-//    private void updateTransform() {
-//        Matrix mx = new Matrix();
-//        float w = temp_textureview.getMeasuredWidth();
-//        float h = temp_textureview.getMeasuredHeight();
-//
-//        float cX = w / 2f;
-//        float cY = h / 2f;
-//
-//        int rotationDgr;
-//        int rotation = (int) temp_textureview.getRotation();
-//
-//        switch (rotation) {
-//            case Surface.ROTATION_0:
-//                rotationDgr = 0;
-//                break;
-//            case Surface.ROTATION_90:
-//                rotationDgr = 90;
-//                break;
-//            case Surface.ROTATION_180:
-//                rotationDgr = 180;
-//                break;
-//            case Surface.ROTATION_270:
-//                rotationDgr = 270;
-//                break;
-//            default:
-//                return;
-//        }
-//
-//        mx.postRotate((float) rotationDgr, cX, cY);
-//        temp_textureview.setTransform(mx);
-//    }
-
-
-//    public void rotateImage(File file) {
-//        try {
-//
-//            ExifInterface exif = new ExifInterface(file.getPath());
-//            int orientation = exif.getAttributeInt(
-//                    ExifInterface.TAG_ORIENTATION,
-//                    ExifInterface.ORIENTATION_NORMAL);
-//
-//            int angle = 0;
-//
-//            if (orientation == ExifInterface.ORIENTATION_ROTATE_90) {
-//                angle = 90;
-//            } else if (orientation == ExifInterface.ORIENTATION_ROTATE_180) {
-//                angle = 180;
-//            } else if (orientation == ExifInterface.ORIENTATION_ROTATE_270) {
-//                angle = 270;
-//            }
-//
-//            Matrix mat = new Matrix();
-//            mat.postRotate(angle);
-//            BitmapFactory.Options options = new BitmapFactory.Options();
-//            options.inSampleSize = 2;
-//
-//            Bitmap bmp = BitmapFactory.decodeStream(new FileInputStream(file),
-//                    null, options);
-//            Bitmap bitmap = Bitmap.createBitmap(bmp, 0, 0, bmp.getWidth(),
-//                    bmp.getHeight(), mat, true);
-//            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-//            bitmap.compress(Bitmap.CompressFormat.JPEG, 100,
-//                    outputStream);
-//            FileOutputStream out = new FileOutputStream(getExternalFilesDir(Environment.DIRECTORY_DCIM) + File.separator + "train_photo.jpeg");
-//            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
-//            out.close();
-//
-//            setImage();
-//
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        } catch (OutOfMemoryError oom) {
-//
-//            Toast.makeText(getApplicationContext(), "Out of Memory", Toast.LENGTH_SHORT).show();
-//
-//        }
-//    }
-
-    //end temporary methods for testing purpose taken from takephotos.java
-
 
     @Override
     public void onBackPressed() {
@@ -315,8 +157,10 @@ public class MatchPhotos extends AppCompatActivity {
             tempCamera.setImageBitmap(small_image);
         }
 
-
-        tempPassport.setImageBitmap(image2);
+        if(image2 != null) {
+            Bitmap small_image2 = Bitmap.createScaledBitmap(image2, 300, 300, false);
+            tempPassport.setImageBitmap(small_image2);
+        }
     }
 
 
@@ -354,17 +198,28 @@ public class MatchPhotos extends AppCompatActivity {
         Rect rect2 = box2.transform2Rect();
 
         // Cut face
+//        Toast.makeText(getApplicationContext(), bitmapTemp1.getHeight() + " width" + bitmapTemp1.getWidth() + " rect top" + rect1.top + " " +
+//                rect1.bottom + " " + rect1.left + " " + rect1.right , Toast.LENGTH_LONG).show();
         bitmapCrop1 = FaceMatchUtil.crop(bitmapTemp1, rect1);
         bitmapCrop2 = FaceMatchUtil.crop(bitmapTemp2, rect2);
 
-        Bitmap scBitmap1 = Bitmap.createScaledBitmap(bitmapCrop1, 256, 256, true);
-        Bitmap scBitmap2 = Bitmap.createScaledBitmap(bitmapCrop2, 256, 256, true);
+        int x = rect1.left - rect1.left/4;
+        int x2 = rect2.left - rect2.left/4;
+
+        Bitmap showBitmap1 = Bitmap.createBitmap(bitmapTemp1, x , rect1.top/2, rect1.right - rect1.left/2, rect1.bottom);
+        Bitmap showBitmap2 = Bitmap.createBitmap(bitmapTemp2, x2 , rect2.top/2, rect2.right - rect2.left/2 , rect2.bottom);
+
+
+
+
+        Bitmap scBitmap1 = Bitmap.createScaledBitmap(showBitmap1, 413, 531, true);
+        Bitmap scBitmap2 = Bitmap.createScaledBitmap(showBitmap2, 413, 531, true);
 
 
         File passFile = new File(getExternalFilesDir(Environment.DIRECTORY_DCIM) + File.separator + "passport_face.jpeg");
         try {
             FileOutputStream out = new FileOutputStream(passFile);
-            scBitmap2.compress(Bitmap.CompressFormat.JPEG, 100, out);
+            scBitmap1.compress(Bitmap.CompressFormat.JPEG, 100, out);
             out.flush();
             out.close();
         } catch (Exception e) {
@@ -374,7 +229,7 @@ public class MatchPhotos extends AppCompatActivity {
         File liveFile = new File(getExternalFilesDir(Environment.DIRECTORY_DCIM) + File.separator + "camera_face.jpeg");
         try {
             FileOutputStream out = new FileOutputStream(liveFile);
-            scBitmap1.compress(Bitmap.CompressFormat.JPEG, 100, out);
+            scBitmap2.compress(Bitmap.CompressFormat.JPEG, 100, out);
             out.flush();
             out.close();
         } catch (Exception e) {
@@ -384,8 +239,10 @@ public class MatchPhotos extends AppCompatActivity {
 
         faceCamera.setVisibility(View.VISIBLE);
         facePass.setVisibility(View.VISIBLE);
-        faceCamera.setImageBitmap(bitmapCrop2);
-        facePass.setImageBitmap(bitmapCrop1);
+        detect_pass.setVisibility(View.VISIBLE);
+        detect_cam.setVisibility(View.VISIBLE);
+        faceCamera.setImageBitmap(scBitmap2);
+        facePass.setImageBitmap(scBitmap1);
     }
 
 
@@ -404,19 +261,15 @@ public class MatchPhotos extends AppCompatActivity {
 
         String text = String.valueOf(same) + " %";
         if (same > MobileFaceNet.THRESHOLD) {
-//            text = text + "，" + "True";
-
             result.setTextColor(getResources().getColor(android.R.color.holo_green_light));
             sharedPreferences.edit().putBoolean("isMatched", true).apply();
             next_demorph.setVisibility(View.VISIBLE);
         } else {
-//            text = text + "，" + "False";
             sharedPreferences.edit().putBoolean("isMatched", false).apply();
             result.setTextColor(getResources().getColor(android.R.color.holo_red_light));
         }
 
 
-//        text = text + " Threshold :" + MobileFaceNet.THRESHOLD;
         result.setText(text.substring(0,5));
     }
 

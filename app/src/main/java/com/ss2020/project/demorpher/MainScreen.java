@@ -12,10 +12,12 @@ import android.os.Environment;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
 
 import java.io.File;
@@ -35,6 +37,8 @@ public class MainScreen extends AppCompatActivity {
     Button match_photos;
     Button about_us;
     ImageView main_screen_image;
+    TextView pass_txt;
+    CardView pass_card;
 
     public static boolean hasPermissions(Context context, String... permissions) {
         if (context != null && permissions != null) {
@@ -69,9 +73,12 @@ public class MainScreen extends AppCompatActivity {
         demorph = (Button) findViewById(R.id.btn_demorph);
         match_photos = (Button) findViewById(R.id.btn_match_photo);
         about_us = (Button) findViewById(R.id.btn_about_us);
-
+        pass_txt = (TextView) findViewById(R.id.main_screen_pass_txt);
+        pass_card = (CardView) findViewById(R.id.main_screen_card);
 
         viewPhotos.setClickable(false);
+        pass_card.setVisibility(View.INVISIBLE);
+        pass_txt.setVisibility(View.INVISIBLE);
 
 
 
@@ -93,8 +100,12 @@ public class MainScreen extends AppCompatActivity {
 
 
         Bitmap main_image = BitmapFactory.decodeFile(getExternalFilesDir(Environment.DIRECTORY_DCIM) + File.separator + "passport_photo.jpeg");
-        if(main_image != null)
-            main_screen_image.setImageBitmap(main_image);
+        if(main_image != null) {
+            Bitmap scaled_image = Bitmap.createScaledBitmap(main_image, 300, 400, false);
+            pass_card.setVisibility(View.VISIBLE);
+            pass_txt.setVisibility(View.VISIBLE);
+            main_screen_image.setImageBitmap(scaled_image);
+        }
         match_photos.setClickable(false);
         match_photos.setBackground(getDrawable(R.drawable.button_disabled));
         demorph.setBackground(getDrawable(R.drawable.button_disabled));

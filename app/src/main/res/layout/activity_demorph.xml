@@ -9,26 +9,43 @@
     android:hapticFeedbackEnabled="false"
     tools:context=".DemorphPhotos">
 
-    <ImageView
-        android:id="@+id/demorph_pass_img"
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardView4"
         android:layout_width="150dp"
-        android:layout_height="150dp"
+        android:layout_height="170dp"
         android:layout_marginTop="100dp"
-        app:layout_constraintEnd_toStartOf="@+id/demorph_cam_image"
-        app:layout_constraintHorizontal_bias="0.51"
+        android:elevation="10dp"
+        app:cardCornerRadius="15dp"
+        app:layout_constraintEnd_toStartOf="@+id/cardView5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_launcher_background" />
+        app:layout_constraintTop_toTopOf="parent">
 
-    <ImageView
-        android:id="@+id/demorph_cam_image"
+        <ImageView
+            android:id="@+id/demorph_pass_img"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            app:srcCompat="@drawable/ic_launcher_background" />
+    </androidx.cardview.widget.CardView>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardView5"
         android:layout_width="150dp"
-        android:layout_height="150dp"
+        android:layout_height="170dp"
         android:layout_marginTop="100dp"
+        android:elevation="10dp"
+        app:cardCornerRadius="15dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/demorph_pass_img"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_launcher_background" />
+        app:layout_constraintStart_toEndOf="@+id/cardView4"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/demorph_cam_image"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            app:srcCompat="@drawable/ic_launcher_background" />
+    </androidx.cardview.widget.CardView>
 
     <TextView
         android:id="@+id/textView6"
@@ -38,10 +55,9 @@
         android:text="Passport"
         android:textSize="18sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/demorph_pass_img"
+        app:layout_constraintBottom_toTopOf="@+id/cardView4"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.493" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/textView7"
@@ -51,19 +67,28 @@
         android:text="Camera"
         android:textSize="18sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/demorph_cam_image"
+        app:layout_constraintBottom_toTopOf="@+id/cardView5"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageView
-        android:id="@+id/demorphed_img"
+    <androidx.cardview.widget.CardView
+        android:id="@+id/demorphed_card"
         android:layout_width="150dp"
         android:layout_height="150dp"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="30dp"
+        android:elevation="10dp"
+        app:cardCornerRadius="15dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/demorph_cam_image"
-        app:srcCompat="@drawable/ic_launcher_background" />
+        app:layout_constraintTop_toBottomOf="@+id/cardView4">
+
+        <ImageView
+            android:id="@+id/demorphed_img"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:scaleType="centerCrop"
+            app:srcCompat="@drawable/ic_launcher_background" />
+    </androidx.cardview.widget.CardView>
 
     <TableRow
         android:id="@+id/tableRow"
@@ -73,7 +98,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/demorphed_img">
+        app:layout_constraintTop_toBottomOf="@+id/demorphed_card">
 
         <TextView
             android:id="@+id/textView8"
@@ -136,5 +161,5 @@
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/demorphed_img" />
+        app:layout_constraintTop_toBottomOf="@+id/demorphed_card" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -14,6 +14,5 @@ import retrofit2.http.POST;
 public interface UserService {
     @Headers("Content-type: application/json")
     @POST("/api/anomalydetector/demorphing/analyse")
-    //@POST("api/anomalydetector5/analyse")
     Call<UserResponse> postData(@Body JsonObject body);
 }

@@ -32,7 +32,6 @@ public class ScanResultActivity extends AppCompatActivity {
     Bitmap faceBitmap;
     DetectedFace mrtdFace;
     MRTDScanResult scanResult;
-    Button next_capture;
     SharedPreferences sharedPreferences;
 
     private static class StorageKeys {
@@ -47,7 +46,7 @@ public class ScanResultActivity extends AppCompatActivity {
 
 
         sharedPreferences = getSharedPreferences("enableDisable", MODE_PRIVATE);
-        next_capture = (Button) findViewById(R.id.next_capture_btn);
+
         if (savedInstanceState != null) {
             mrtdFace = savedInstanceState.getParcelable(StorageKeys.MRTD_FACE);
             scanResult = savedInstanceState.getParcelable(StorageKeys.SCAN_RESULT);
@@ -56,24 +55,7 @@ public class ScanResultActivity extends AppCompatActivity {
         }
         faceBitmap = BitmapFactory.decodeFile(scanResult.getFaceImageFilePath());
 
-//        next_capture.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                int PERMISSION_ALL = 1;
-//                String[] PERMISSIONS = {
-//                        android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
-//                        android.Manifest.permission.CAMERA
-//                };
-//
-//                if (!hasPermissions(ScanResultActivity.this, PERMISSIONS)) {
-//                    ActivityCompat.requestPermissions(ScanResultActivity.this, PERMISSIONS, PERMISSION_ALL);
-//                } else {
-//                    Intent i = new Intent(ScanResultActivity.this, TakePhoto.class);
-//                    startActivity(i);
-//                }
-//
-//            }
-//        });
+
 
         invalidateOptionsMenu();
         showScanResult();
@@ -132,6 +114,10 @@ public class ScanResultActivity extends AppCompatActivity {
                     sharedPreferences.edit().putBoolean("hasPassportImage", false).apply();
                 sharedPreferences.edit().putBoolean("isMatched", false).apply();
 
+                Intent i = new Intent(ScanResultActivity.this, MainScreen.class);
+                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(i);
+
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -155,28 +141,29 @@ public class ScanResultActivity extends AppCompatActivity {
         ((TextView)findViewById(R.id.nationality)).setText(scanResult.getNationality());
         ((TextView)findViewById(R.id.gender)).setText(scanResult.getGender());
         ((TextView)findViewById(R.id.dateOfBirth)).setText(scanResult.getDateOfBirth());
-        ((Button)findViewById(R.id.next_match_btn)).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int PERMISSION_ALL = 1;
-                String[] PERMISSIONS = {
-                        android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                        android.Manifest.permission.CAMERA
-                };
-
-                if (!hasPermissions(ScanResultActivity.this, PERMISSIONS)) {
-                    ActivityCompat.requestPermissions(ScanResultActivity.this, PERMISSIONS, PERMISSION_ALL);
-                } else {
-                    Intent i = new Intent(ScanResultActivity.this, TakePhoto.class);
-                    startActivity(i);
-                }
-            }
-        });
-        if (faceBitmap != null) {
-            ((ImageView)findViewById(R.id.imageView)).setImageBitmap(faceBitmap);
-        } else {
-            findViewById(R.id.imageView).setVisibility(View.GONE);
-        }
+        ((ImageView)findViewById(R.id.imageView)).setImageBitmap(faceBitmap);
+//        ((Button)findViewById(R.id.next_match_btn)).setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                int PERMISSION_ALL = 1;
+//                String[] PERMISSIONS = {
+//                        android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
+//                        android.Manifest.permission.CAMERA
+//                };
+//
+//                if (!hasPermissions(ScanResultActivity.this, PERMISSIONS)) {
+//                    ActivityCompat.requestPermissions(ScanResultActivity.this, PERMISSIONS, PERMISSION_ALL);
+//                } else {
+//                    Intent i = new Intent(ScanResultActivity.this, TakePhoto.class);
+//                    startActivity(i);
+//                }
+//            }
+//        });
+//        if (faceBitmap != null) {
+//            (
+//        } else {
+//            findViewById(R.id.imageView).setVisibility(View.GONE);
+//        }
     }
 
 //    private void captureLiveFace() {
