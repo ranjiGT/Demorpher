@@ -6,7 +6,9 @@ Summer Semester 2020 Project
 
 # 1 Motivation and Problem Statement
 
-The  application  follows  a  generic  workflow  as  describedbelow.For  developing  the  Android  application  to  detect  potentiallymorphed  passport  images,  we  started  by  portraying  a  layoutfor the application followed by implementing the features one by one. 
+Face Morphing Attacks (FMA) pose a serious threat and other concerns to current travel regulations security. In this piece of work, we demonstrate how a live image of the user face acquired at uncontrolled environment, can be used to restore the de-morphed image from the morphed image stored in the travel document. A series of steps carried out on a data set gives the benchmark for further analysis and results. 
+
+The  application  follows  a  generic  workflow  as  described below.For  developing  the  Android  application  to  detect  potentially morphed  passport  images,  we  started  by  portraying  a  layoutfor the application followed by implementing the features one by one. 
 
 The steps are as follows:
 - Read the travel document data (image in our case) usingNFC
