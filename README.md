@@ -1,4 +1,4 @@
-# Demorpher
+# Demorpher [](https://img.shields.io/badge/Android-3DDC84?style=for-the-badge&logo=android&logoColor=white)
 Summer Semester 2020 Project
 
 
